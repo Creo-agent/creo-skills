@@ -15,16 +15,20 @@ monday.com marketing design team's canonical hub at
 
 ## Skills
 
-| Skill | Purpose | Status |
-|---|---|---|
-| `export-as-gif` | Render HTML/GSAP animation to GIF/MP4/WebM via Remotion | ✅ installed |
-| `extract-animation-from-web` | Rip an animated section off a live site into a standalone HTML | ✅ installed |
-| `figma-modify` | Modify/tweak existing Figma designs via MCP | ✅ installed |
-| `figma-resize` | Resize a Figma KV into all standard ad & social formats | ✅ installed |
-| `loop-animator` | Turn a scroll/hover animation into a seamless auto-playing GSAP loop | ✅ installed |
-| `monday-presentation` | Generate branded monday.com HTML slide decks | ✅ installed |
-| `precise-figma-composition` | Reproduce a Figma frame layout pixel-accurately in code | ✅ installed |
-| `resize-animation` | Adapt an animation to new canvas sizes/aspect ratios | ✅ installed |
+| Skill | Purpose | Source | Status |
+|---|---|---|---|
+| `export-as-gif` | Render HTML/GSAP animation to GIF/MP4/WebM via Remotion | hub | ✅ installed |
+| `extract-animation-from-web` | Rip an animated section off a live site into a standalone HTML | hub | ✅ installed |
+| `figma-modify` | Modify/tweak existing Figma designs via MCP | hub | ✅ installed |
+| `figma-resize` | Resize a Figma KV into all standard ad & social formats | hub | ✅ installed |
+| `loop-animator` | Turn a scroll/hover animation into a seamless auto-playing GSAP loop | hub | ✅ installed |
+| `monday-presentation` | Generate branded monday.com HTML slide decks | hub | ✅ installed |
+| `precise-figma-composition` | Reproduce a Figma frame layout pixel-accurately in code | hub | ✅ installed |
+| `resize-animation` | Adapt an animation to new canvas sizes/aspect ratios | hub | ✅ installed |
+| `design-review` | Structured brand & creative review against Clay design system | Creo | ✅ installed |
+| `skill-workshop` | Create or improve Creo skills; lists all installed skills | Creo | ✅ installed |
+| `resize-with-nano-banana` | AI-generated ad-format PNGs from a master KV via Gemini | Creo | ✅ installed |
+| `nano-banana-image-gen` | Standalone image generation via Gemini Nano Banana Pro | Creo | ✅ installed |
 
 ## Sync script
 
