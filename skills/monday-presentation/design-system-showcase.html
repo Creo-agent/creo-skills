@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>monday.com Design System — v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============ TOKENS ============ */
+    :root {
+      --color-bg:             #000000;
+      --color-surface:        #232427;
+      --color-surface-alt:    #2D3035;
+      --color-text:           #ffffff;
+      --color-text-secondary: #c3ced8;
+      --color-text-muted:     #a0a0a0;
+      --color-purple:         #6164ff;
+      --color-purple-light:   #8A99FF;
+      --color-red:            #ff3d57;
+      --color-yellow:         #ffcb00;
+      --color-green:          #00c875;
+      --color-border:         rgba(255,255,255,0.12);
+      --color-border-mid:     rgba(255,255,255,0.07);
+      --page-bg:  #0a0a0a;
+      --card-bg:  #111215;
+    }
+    [data-theme="light"] {
+      --color-bg:             #ffffff;
+      --color-surface:        #F0F2F5;
+      --color-surface-alt:    #E3E6EE;
+      --color-text:           #1F2D3D;
+      --color-text-secondary: #455A73;
+      --color-text-muted:     #8FA0B3;
+      --color-border:         rgba(0,0,0,0.10);
+      --color-border-mid:     rgba(0,0,0,0.05);
+      --page-bg:  #f4f5f7;
+      --card-bg:  #ffffff;
+    }
+
+    /* ============ RESET ============ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--page-bg);
+      color: var(--color-text);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ============ HEADER ============ */
+    .page-header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 48px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-title { font-size: 17px; font-weight: 600; }
+    .v-badge {
+      background: var(--color-purple); color: #fff;
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 999px;
+    }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-link {
+      font-size: 12px; color: var(--color-text-muted);
+      text-decoration: none; transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--color-text); }
+    .theme-toggle {
+      display: flex; background: var(--color-surface);
+      border: 1px solid var(--color-border); border-radius: 999px; padding: 3px;
+    }
+    .theme-btn {
+      font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600;
+      padding: 3px 14px; border-radius: 999px; border: none;
+      background: transparent; color: var(--color-text-muted); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .theme-btn.active { background: var(--color-purple); color: #fff; }
+
+    /* ============ LAYOUT ============ */
+    .content { max-width: 1160px; margin: 0 auto; padding: 48px 48px 80px; }
+    .section { margin-bottom: 60px; }
+    .section-head {
+      display: flex; align-items: baseline; gap: 10px;
+      margin-bottom: 22px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .section-title { font-size: 20px; font-weight: 600; }
+    .section-note { font-size: 11px; color: var(--color-text-muted); font-weight: 400; }
+    .card {
+      background: var(--card-bg); border: 1px solid var(--color-border);
+      border-radius: 14px; padding: 22px;
+    }
+    .label {
+      font-size: 10px; font-weight: 600; color: var(--color-text-muted);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px;
+    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .span2 { grid-column: 1/-1; }
+    code {
+      font-family: 'SF Mono','Fira Code',monospace; font-size: 11px;
+      background: var(--color-surface-alt); padding: 1px 6px; border-radius: 4px;
+    }
+
+    /* ============ COLORS ============ */
+    .swatch-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .swatch { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .swatch-box { width: 56px; height: 40px; border-radius: 8px; border: 1px solid var(--color-border); }
+    .swatch-name { font-size: 10px; color: var(--color-text-secondary); text-align: center; max-width: 72px; }
+    .swatch-val { font-size: 9px; color: var(--color-text-muted); font-family: monospace; }
+
+    /* ============ TYPOGRAPHY ============ */
+    .type-row {
+      display: flex; align-items: baseline; gap: 20px;
+      padding: 13px 0; border-bottom: 1px solid var(--color-border-mid);
+    }
+    .type-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .type-meta { min-width: 130px; flex-shrink: 0; }
+    .type-token { font-size: 11px; font-weight: 600; color: var(--color-text-muted); }
+    .type-detail { font-size: 10px; color: var(--color-text-muted); font-family: monospace; margin-top: 2px; }
+    .weight-row {
+      display: flex; align-items: center; gap: 20px;
+      padding: 10px 0; border-bottom: 1px solid var(--color-border-mid);
+    }
+    .weight-row:last-child { border-bottom: none; }
+    .weight-meta { min-width: 150px; font-size: 10px; font-family: monospace; color: var(--color-text-muted); }
+    .hl-sample { font-size: 20px; font-weight: 400; }
+    .hl-color { color: var(--color-yellow); }
+    [data-theme="light"] .hl-color { color: var(--color-purple); }
+    .hl-bold { font-weight: 600; }
+    .callout {
+      border-left: 3px solid var(--color-purple);
+      padding: 10px 14px; background: var(--color-surface);
+      border-radius: 0 8px 8px 0; font-size: 11px;
+      color: var(--color-text-secondary); line-height: 1.6; margin-top: 14px;
+    }
+    .callout.warn { border-color: var(--color-red); }
+
+    /* ============ SPACING ============ */
+    .space-row { display: flex; align-items: center; gap: 12px; padding: 5px 0; }
+    .space-token { font-size: 10px; font-family: monospace; color: var(--color-text-muted); min-width: 80px; }
+    .space-val { font-size: 10px; color: var(--color-text-secondary); min-width: 56px; }
+    .space-bar { background: var(--color-purple); height: 18px; border-radius: 3px; opacity: 0.75; }
+    .radius-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-end; margin-top: 4px; }
+    .radius-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .radius-box { width: 48px; height: 32px; background: var(--color-surface); border: 2px solid var(--color-purple); }
+    .radius-lbl { font-size: 10px; font-family: monospace; color: var(--color-text-muted); }
+
+    /* ============ COMPONENTS ============ */
+    .stat-val { font-size: 32px; font-weight: 600; line-height: 1; }
+    .stat-lbl { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+    .step-demo {
+      background: var(--color-surface); border-radius: 10px;
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .step-num { font-size: 26px; font-weight: 600; line-height: 1; }
+    .step-txt { font-size: 12px; color: var(--color-text-secondary); }
+    .dot-p { color: #6164ff; }
+    .dot-y { color: #ffcb00; }
+    .dot-g { color: #00c875; }
+    .img-ph-demo {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; background: var(--color-surface); border-radius: 14px;
+      color: rgba(255,255,255,0.35); height: 120px;
+    }
+    [data-theme="light"] .img-ph-demo { color: rgba(0,0,0,0.25); }
+    .img-ph-demo .ph-lbl { font-size: 11px; font-weight: 600; }
+    .data-row-demo {
+      background: var(--color-surface); border-radius: 6px;
+      display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr;
+      padding: 9px 14px; font-size: 12px;
+    }
+    .data-row-demo.even { background: transparent; }
+
+    /* ============ SLIDE TEMPLATES ============ */
+    /* Template previews are in slide-templates.html — this page just lists class names */
+    .pb-panelinner { padding: 8% 10%; display: flex; flex-direction: column; gap: 8%; height: 100%; }
+    /* purple accent panel border uses token */
+    .pb-panelhi { border-color: color-mix(in srgb, var(--color-purple) 60%, transparent) !important; }
+
+    /* ============ DESIGN RULES ============ */
+    .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .rule-card {
+      background: var(--card-bg); border: 1px solid var(--color-border);
+      border-radius: 14px; padding: 18px;
+    }
+    .rule-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .rule-icon {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rule-icon svg { width: 15px; height: 15px; }
+    .rule-title { font-size: 13px; font-weight: 600; }
+    .rule-body { font-size: 11px; color: var(--color-text-secondary); line-height: 1.65; }
+    .do   { color: var(--color-green); font-weight: 600; }
+    .dont { color: var(--color-red);   font-weight: 600; }
+
+    /* ============ FOOTER ============ */
+    .page-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 20px 48px; text-align: center;
+      font-size: 10px; color: var(--color-text-muted);
+    }
+
+    /* ============ CHART EXAMPLES ============ */
+    @keyframes chartBarGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    @keyframes chartScaleIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .chart-ex { background: var(--color-surface); border-radius: 10px; padding: 18px 20px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .chart-ex-title { font-size: 13px; font-weight: 600; color: var(--color-text); }
+    .chart-ex-body { display: flex; gap: 8px; height: 140px; }
+    .chart-ex-yaxis { display: flex; flex-direction: column-reverse; justify-content: space-between; width: 28px; font-size: 9px; color: var(--color-text-muted); padding-bottom: 18px; }
+    .chart-ex-plot { flex: 1; position: relative; display: flex; flex-direction: column; }
+    .chart-ex-gridlines { position: absolute; inset: 0 0 18px 0; display: flex; flex-direction: column-reverse; justify-content: space-between; pointer-events: none; }
+    .chart-ex-gridline { height: 1px; background: var(--color-border); }
+    .chart-ex-bars { flex: 1; display: flex; gap: 8px; align-items: flex-end; padding-bottom: 18px; }
+    .chart-ex-group { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+    .chart-ex-group-bars { flex: 1; display: flex; gap: 3px; align-items: flex-end; width: 100%; }
+    .chart-ex-barwrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+    .chart-ex-bar-label { font-size: 9px; font-weight: 600; color: var(--color-text); margin-bottom: 2px; }
+    .chart-ex-bar { width: 100%; border-radius: 3px 3px 0 0; transform-origin: bottom; animation: chartBarGrow 0.6s ease-out both; }
+    .chart-ex-group:nth-child(1) .chart-ex-bar { animation-delay: 0.10s; }
+    .chart-ex-group:nth-child(2) .chart-ex-bar { animation-delay: 0.18s; }
+    .chart-ex-group:nth-child(3) .chart-ex-bar { animation-delay: 0.26s; }
+    .chart-ex-group:nth-child(4) .chart-ex-bar { animation-delay: 0.34s; }
+    .chart-ex-xlabel { font-size: 9px; color: var(--color-text-muted); margin-top: 4px; }
+    .bar-purple { background: #6164ff; }
+    .bar-light  { background: #8A99FF; }
+    .chart-ex-legend { display: flex; justify-content: center; gap: 20px; }
+    .chart-ex-leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); }
+    .chart-ex-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .donut-ex-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .donut-ex-chart { width: 110px; height: 110px; border-radius: 50%; background: conic-gradient(#6164ff 0% 62%, #ffcb00 62% 86%, #00c875 86% 100%); -webkit-mask: radial-gradient(closest-side, transparent 54%, black 55%); mask: radial-gradient(closest-side, transparent 54%, black 55%); animation: chartScaleIn 0.6s ease-out both; }
+    .donut-ex-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+    .donut-ex-val { font-size: 18px; font-weight: 600; line-height: 1; }
+    .donut-ex-lbl { font-size: 9px; color: var(--color-text-muted); margin-top: 2px; }
+    .pie-ex-chart { width: 110px; height: 110px; border-radius: 50%; flex-shrink: 0; background: conic-gradient(#6164ff 0% 45%, #00c875 45% 78%, #ffcb00 78% 92%, #ff3d57 92% 100%); animation: chartScaleIn 0.6s ease-out both; }
+    .donut-ex-legend { display: flex; flex-direction: column; gap: 8px; }
+    .donut-ex-leg { display: flex; align-items: center; gap: 8px; }
+    .donut-ex-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .donut-ex-name { font-size: 11px; color: var(--color-text-secondary); flex: 1; }
+    .donut-ex-pct { font-size: 11px; font-weight: 600; color: var(--color-text); padding-left: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- =========================================== HEADER -->
+<header class="page-header">
+  <div class="header-left">
+    <svg width="141" height="25" viewBox="0 0 282 50" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.68474 35.762C3.70108 35.7602 1.87466 34.7272 0.914601 33.0642C-0.0454546 31.4011 0.0120846 29.3698 1.06488 27.7591L10.8879 12.7341C11.8969 11.0981 13.7529 10.1154 15.7356 10.1675C17.7182 10.2196 19.5153 11.2982 20.4292 12.9847C21.3431 14.6713 21.2298 16.7001 20.1335 18.2836L10.3163 33.3086C9.31775 34.8373 7.56703 35.7647 5.68474 35.762Z" fill="#FB275D"/><path d="M22.4209 35.7618C20.4405 35.7601 18.6171 34.7296 17.6586 33.0704C16.7001 31.4113 16.7576 29.3849 17.8086 27.778L27.6127 12.7887C28.6058 11.1288 30.4684 10.1226 32.4659 10.1668C34.4635 10.211 36.2755 11.2985 37.1875 13.0005C38.0995 14.7025 37.9651 16.7459 36.8373 18.325L27.0332 33.3143C26.0386 34.836 24.296 35.7607 22.4209 35.7618Z" fill="#FFCC00"/><path d="M38.7383 35.7925C41.7384 35.7925 44.1705 33.3647 44.1705 30.3698C44.1705 27.3749 41.7384 24.947 38.7383 24.947C35.7382 24.947 33.3062 27.3749 33.3062 30.3698C33.3062 33.3647 35.7382 35.7925 38.7383 35.7925Z" fill="#00CA72"/><path d="M214.619 45.1879L219.096 34.827L209.273 11.9539H217.531L223.138 26.749L228.875 11.9539H236.786L222.617 45.1879H214.619Z" fill="currentColor"/><path d="M191.966 11.6026C195.617 11.6026 198.181 13.2709 199.485 15.4221V11.9538H206.918V36.4513H199.485V32.983C198.138 35.1342 195.574 36.8025 191.966 36.8025C186.011 36.8025 181.317 31.8855 181.317 24.1587C181.317 16.4318 186.011 11.6026 191.966 11.6026ZM188.88 24.1587C188.88 28.066 191.357 30.2611 194.183 30.2611C197.008 30.2611 199.485 28.1099 199.485 24.2026C199.485 20.2952 197.008 18.144 194.183 18.144C191.357 18.144 188.88 20.2513 188.88 24.1587Z" fill="currentColor"/><path d="M163.184 11.6027C166.4 11.6027 169.138 13.0954 170.616 15.3344V3.96375H178.092V36.4515H170.616V32.9393C169.312 35.1783 166.748 36.8027 163.14 36.8027C157.186 36.8027 152.491 31.8856 152.491 24.1588C152.491 16.432 157.186 11.6027 163.184 11.6027ZM160.054 24.1588C160.054 28.0661 162.532 30.2612 165.357 30.2612C168.182 30.2612 170.66 28.11 170.66 24.2027C170.66 20.2954 168.182 18.1442 165.357 18.1442C162.532 18.1442 160.054 20.2515 160.054 24.1588Z" fill="currentColor"/><path d="M142.006 23.1489C142.006 19.8123 140.137 17.9684 137.356 17.9684C134.487 17.9684 132.661 19.8123 132.661 23.1489V36.4513H125.229V11.9538H132.661V15.2465C134.139 13.1392 136.747 11.6904 140.007 11.6904C145.657 11.6904 149.395 15.5538 149.395 22.1392V36.4513H142.006V23.1489Z" fill="currentColor"/><path d="M109.31 37.022C102.182 37.022 96.8359 32.1927 96.8359 24.2025C96.8359 16.2123 102.312 11.383 109.441 11.383C116.569 11.383 122.045 16.2123 122.045 24.2025C122.045 32.1927 116.482 37.022 109.31 37.022ZM104.355 24.2025C104.355 28.3293 106.659 30.3049 109.31 30.3049C111.962 30.3049 114.483 28.3293 114.483 24.2025C114.483 20.0318 112.005 18.1001 109.397 18.1001C106.746 18.1001 104.355 20.0318 104.355 24.2025Z" fill="currentColor"/><path d="M52.8496 11.9538H60.2821V15.0709C61.7164 13.0514 64.2374 11.6904 67.3668 11.6904C71.0613 11.6904 74.0169 13.3148 75.6686 16.2563C77.2768 13.666 80.2759 11.6904 83.84 11.6904C89.8381 11.6904 93.7065 15.5538 93.7065 22.1392V36.4513H86.3175V23.1489C86.3175 19.944 84.4485 18.188 81.6667 18.188C78.7981 18.188 77.016 19.944 77.016 23.1489V36.4513H69.627V23.1489C69.627 19.944 67.758 18.188 64.9763 18.188C62.1076 18.188 60.2821 19.944 60.2821 23.1489V36.4513H52.8496V11.9538Z" fill="currentColor"/><path d="M232.606 36.5996C232.111 36.5996 231.701 36.439 231.376 36.1178C231.063 35.7826 230.907 35.3707 230.907 34.8819C230.907 34.3931 231.063 33.9881 231.376 33.6669C231.701 33.3318 232.111 33.1642 232.606 33.1642C233.088 33.1642 233.485 33.3318 233.798 33.6669C234.11 33.9881 234.266 34.3931 234.266 34.8819C234.266 35.3707 234.11 35.7826 233.798 36.1178C233.485 36.439 233.088 36.5996 232.606 36.5996Z" fill="currentColor"/><path d="M236.725 31.4375C236.725 30.4075 236.936 29.5107 237.359 28.7473C237.782 27.9718 238.366 27.372 239.112 26.9479C239.871 26.5238 240.735 26.3117 241.705 26.3117C242.96 26.3117 243.992 26.6086 244.801 27.2023C245.621 27.7961 246.162 28.6201 246.423 29.6743H244.595C244.421 29.0685 244.079 28.5898 243.57 28.2384C243.072 27.887 242.451 27.7113 241.705 27.7113C240.735 27.7113 239.951 28.0385 239.355 28.6928C238.758 29.335 238.459 30.2499 238.459 31.4375C238.459 32.6371 238.758 33.5641 239.355 34.2184C239.951 34.8728 240.735 35.2 241.705 35.2C242.451 35.2 243.072 35.0303 243.57 34.691C244.067 34.3517 244.409 33.867 244.595 33.2369H246.423C246.15 34.2548 245.602 35.0727 244.782 35.6907C243.961 36.2966 242.935 36.5996 241.705 36.5996C240.735 36.5996 239.871 36.3875 239.112 35.9634C238.366 35.5393 237.782 34.9394 237.359 34.1639C236.936 33.3884 236.725 32.4796 236.725 31.4375Z" fill="currentColor"/><path d="M252.871 36.5996C251.913 36.5996 251.043 36.3875 250.26 35.9634C249.489 35.5393 248.88 34.9394 248.432 34.1639C247.997 33.3763 247.779 32.4675 247.779 31.4375C247.779 30.4196 248.003 29.5229 248.451 28.7473C248.911 27.9597 249.532 27.3599 250.316 26.9479C251.099 26.5238 251.976 26.3117 252.945 26.3117C253.915 26.3117 254.792 26.5238 255.575 26.9479C256.358 27.3599 256.974 27.9536 257.421 28.7292C257.882 29.5047 258.112 30.4075 258.112 31.4375C258.112 32.4675 257.875 33.3763 257.403 34.1639C256.943 34.9394 256.315 35.5393 255.519 35.9634C254.723 36.3875 253.841 36.5996 252.871 36.5996ZM252.871 35.1454C253.48 35.1454 254.052 35.0061 254.587 34.7274C255.121 34.4487 255.55 34.0306 255.873 33.4732C256.209 32.9158 256.377 32.2372 256.377 31.4375C256.377 30.6377 256.215 29.9591 255.892 29.4017C255.569 28.8443 255.146 28.4323 254.624 28.1657C254.102 27.887 253.536 27.7476 252.927 27.7476C252.305 27.7476 251.733 27.887 251.211 28.1657C250.701 28.4323 250.291 28.8443 249.98 29.4017C249.669 29.9591 249.514 30.6377 249.514 31.4375C249.514 32.2493 249.663 32.934 249.961 33.4914C250.272 34.0488 250.682 34.4669 251.192 34.7456C251.702 35.0122 252.262 35.1454 252.871 35.1454Z" fill="currentColor"/><path d="M272.121 26.2935C272.916 26.2935 273.625 26.4571 274.247 26.7843C274.868 27.0993 275.36 27.578 275.72 28.2202C276.081 28.8625 276.261 29.644 276.261 30.565V36.436H274.582V30.8013C274.582 29.8076 274.328 29.0503 273.818 28.5292C273.32 27.996 272.643 27.7295 271.785 27.7295C270.902 27.7295 270.2 28.0082 269.677 28.5656C269.155 29.1109 268.894 29.9046 268.894 30.9467V36.436H267.216V30.8013C267.216 29.8076 266.961 29.0503 266.451 28.5292C265.953 27.996 265.276 27.7295 264.418 27.7295C263.535 27.7295 262.833 28.0082 262.31 28.5656C261.788 29.1109 261.527 29.9046 261.527 30.9467V36.436H259.83V26.4753H261.527V27.9112C261.863 27.3902 262.31 26.9903 262.87 26.7116C263.442 26.4329 264.07 26.2935 264.754 26.2935C265.612 26.2935 266.37 26.4813 267.029 26.857C267.688 27.2326 268.179 27.784 268.502 28.511C268.788 27.8082 269.261 27.2629 269.92 26.8752C270.579 26.4874 271.312 26.2935 272.121 26.2935Z" fill="currentColor"/></svg>
+    <span class="header-title">Design System</span>
+    <span class="v-badge">v2</span>
+    <nav class="nav-links">
+      <a class="nav-link" href="#colors">Colors</a>
+      <a class="nav-link" href="#type">Typography</a>
+      <a class="nav-link" href="#spacing">Spacing</a>
+      <a class="nav-link" href="#components">Components</a>
+      <a class="nav-link" href="#charts">Charts</a>
+      <a class="nav-link" href="#templates">Templates</a>
+      <a class="nav-link" href="#rules">Rules</a>
+    </nav>
+  </div>
+  <div class="theme-toggle">
+    <button class="theme-btn active" id="btn-dark"  onclick="setTheme('dark')">Dark</button>
+    <button class="theme-btn"        id="btn-light" onclick="setTheme('light')">Light</button>
+  </div>
+</header>
+
+<main class="content">
+
+<!-- =========================================== COLORS -->
+<section class="section" id="colors">
+  <div class="section-head">
+    <h2 class="section-title">Colors</h2>
+    <span class="section-note">Toggle theme to see dark / light values</span>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="label">Backgrounds</div>
+      <div class="swatch-row">
+        <div class="swatch">
+          <div class="swatch-box" style="background:var(--color-bg)"></div>
+          <div class="swatch-name">--color-bg</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:var(--color-surface)"></div>
+          <div class="swatch-name">--color-surface</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:var(--color-surface-alt)"></div>
+          <div class="swatch-name">--color-surface-alt</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Text</div>
+      <div class="swatch-row">
+        <div class="swatch">
+          <div class="swatch-box" style="background:var(--color-text)"></div>
+          <div class="swatch-name">--color-text</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:var(--color-text-secondary)"></div>
+          <div class="swatch-name">--color-text-secondary</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:var(--color-text-muted)"></div>
+          <div class="swatch-name">--color-text-muted</div>
+        </div>
+      </div>
+    </div>
+    <div class="card span2">
+      <div class="label">Brand Accents — unchanged across themes</div>
+      <div class="swatch-row">
+        <div class="swatch">
+          <div class="swatch-box" style="background:#6164ff"></div>
+          <div class="swatch-name">--color-purple</div>
+          <div class="swatch-val">#6164ff</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:#8A99FF"></div>
+          <div class="swatch-name">--color-purple-light</div>
+          <div class="swatch-val">#8A99FF</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:#ff3d57"></div>
+          <div class="swatch-name">--color-red</div>
+          <div class="swatch-val">#ff3d57</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:#ffcb00"></div>
+          <div class="swatch-name">--color-yellow</div>
+          <div class="swatch-val">#ffcb00</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-box" style="background:#00c875"></div>
+          <div class="swatch-name">--color-green</div>
+          <div class="swatch-val">#00c875</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================== TYPOGRAPHY -->
+<section class="section" id="type">
+  <div class="section-head">
+    <h2 class="section-title">Typography</h2>
+    <span class="section-note">Poppins · import wght@400;600 only · letter-spacing always 0</span>
+  </div>
+  <div class="grid2">
+    <div class="card span2">
+      <div class="label">Type Scale</div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">display</div><div class="type-detail">10.5vmin · 400</div></div>
+        <div style="font-size:34px;font-weight:400">Display Headline</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">h1</div><div class="type-detail">8vmin · 600</div></div>
+        <div style="font-size:28px;font-weight:600">Heading One</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">h2</div><div class="type-detail">6vmin · 400</div></div>
+        <div style="font-size:21px;font-weight:400">Heading Two</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">h3</div><div class="type-detail">4vmin · 400</div></div>
+        <div style="font-size:15px;font-weight:400">Heading Three</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">body</div><div class="type-detail">2.2vmin · 400</div></div>
+        <div style="font-size:13px;font-weight:400;color:var(--color-text-secondary)">Body copy — slide descriptions, bullet points, supporting text</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">body-sm</div><div class="type-detail">1.8vmin · 400</div></div>
+        <div style="font-size:12px;font-weight:400;color:var(--color-text-secondary)">Small body — labels, tags, captions</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-token">caption</div><div class="type-detail">1.4vmin · 400</div></div>
+        <div style="font-size:10px;font-weight:400;color:var(--color-text-muted)">Caption — chart axis labels, footnotes, timestamps</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Font Weights — Two Only</div>
+      <div class="weight-row">
+        <div class="weight-meta">400 · Regular</div>
+        <div style="font-size:17px;font-weight:400">Ship faster with monday</div>
+      </div>
+      <div class="weight-row">
+        <div class="weight-meta">600 · SemiBold</div>
+        <div style="font-size:17px;font-weight:600">Ship faster with monday</div>
+      </div>
+      <div class="callout">
+        Only <code>wght@400;600</code> is imported. Tokens <code>--weight-light</code> and <code>--weight-medium</code> resolve to 400 and 600 respectively. Never use 300, 500, or 700.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Headline Highlight — One Rule Per Headline</div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--color-text-muted);margin-bottom:6px">.highlight — color only, weight unchanged</div>
+          <div class="hl-sample">Build with <span class="hl-color">monday</span> AI</div>
+          <div style="font-size:10px;color:var(--color-text-muted);margin-top:4px">Yellow on dark · Purple on light · font-weight: inherit</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--color-text-muted);margin-bottom:6px">.highlight--bold — weight only, color unchanged</div>
+          <div class="hl-sample">Ship <span class="hl-bold">10× faster</span> today</div>
+          <div style="font-size:10px;color:var(--color-text-muted);margin-top:4px">color: inherit · font-weight: 600</div>
+        </div>
+        <div class="callout warn">Never combine both on the same span — choose color OR weight, never both</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================== SPACING -->
+<section class="section" id="spacing">
+  <div class="section-head">
+    <h2 class="section-title">Spacing &amp; Geometry</h2>
+    <span class="section-note">vmin units — scale proportionally with viewport</span>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="label">Space Scale</div>
+      <div class="space-row"><div class="space-token">--space-1</div><div class="space-val">0.5vmin</div><div class="space-bar" style="width:5%"></div></div>
+      <div class="space-row"><div class="space-token">--space-2</div><div class="space-val">1vmin</div><div class="space-bar" style="width:10%"></div></div>
+      <div class="space-row"><div class="space-token">--space-3</div><div class="space-val">1.5vmin</div><div class="space-bar" style="width:15%"></div></div>
+      <div class="space-row"><div class="space-token">--space-4</div><div class="space-val">2vmin</div><div class="space-bar" style="width:20%"></div></div>
+      <div class="space-row"><div class="space-token">--space-5</div><div class="space-val">3vmin</div><div class="space-bar" style="width:30%"></div></div>
+      <div class="space-row"><div class="space-token">--space-6</div><div class="space-val">4vmin</div><div class="space-bar" style="width:40%"></div></div>
+      <div class="space-row"><div class="space-token">--space-7</div><div class="space-val">5vmin</div><div class="space-bar" style="width:50%"></div></div>
+      <div class="space-row"><div class="space-token">--space-8</div><div class="space-val">6vmin</div><div class="space-bar" style="width:60%"></div></div>
+      <div class="space-row"><div class="space-token">--space-9</div><div class="space-val">8vmin</div><div class="space-bar" style="width:78%"></div></div>
+      <div class="space-row"><div class="space-token">--space-10</div><div class="space-val">10vmin</div><div class="space-bar" style="width:100%"></div></div>
+    </div>
+    <div class="card">
+      <div class="label">Border Radius</div>
+      <div class="radius-row">
+        <div class="radius-item"><div class="radius-box" style="border-radius:2px"></div><div class="radius-lbl">xs · 0.5vmin</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><div class="radius-lbl">sm · 1vmin</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:8px"></div><div class="radius-lbl">md · 2vmin</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:12px"></div><div class="radius-lbl">lg · 3vmin</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:16px"></div><div class="radius-lbl">xl · 4vmin</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:999px"></div><div class="radius-lbl">full</div></div>
+      </div>
+      <div class="label" style="margin-top:22px">Letter Spacing</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.7">
+        All <code>--tracking-*</code> tokens resolve to <code>0</code>. Poppins ships at the correct optical tracking — the CSS lockdown block enforces <code>letter-spacing: normal !important</code> on all <code>.slide-container *</code>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================== COMPONENTS -->
+<section class="section" id="components">
+  <div class="section-head">
+    <h2 class="section-title">Components</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <div class="card">
+      <div class="label">Stat Blocks — .stat-block / .stat-value / .stat-label</div>
+      <div style="display:flex;gap:48px">
+        <div><div class="stat-val" style="color:#6164ff">47K</div><div class="stat-lbl">Active users</div></div>
+        <div><div class="stat-val" style="color:#00c875">98%</div><div class="stat-lbl">Uptime SLA</div></div>
+        <div><div class="stat-val" style="color:#ffcb00">3.2×</div><div class="stat-lbl">Productivity gain</div></div>
+        <div><div class="stat-val">12 min</div><div class="stat-lbl">Avg. time to ship</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Step Cards — .step-card / .step-number / .step-text + .dot-purple / .dot-yellow / .dot-green</div>
+      <div class="grid3">
+        <div class="step-demo">
+          <div class="step-num">1<span class="dot-p">.</span></div>
+          <div class="step-txt">Define your workflow and connect your data sources</div>
+        </div>
+        <div class="step-demo">
+          <div class="step-num">2<span class="dot-y">.</span></div>
+          <div class="step-txt">Build automations using monday's no-code editor</div>
+        </div>
+        <div class="step-demo">
+          <div class="step-num">3<span class="dot-g">.</span></div>
+          <div class="step-txt">Ship to production and monitor in real time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="label">Image Placeholder — .img-placeholder + .placeholder-label</div>
+        <div class="img-ph-demo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:28px;height:28px;opacity:0.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          <span class="ph-lbl">[Product Screenshot]</span>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          Include inline SVG + <code>.placeholder-label</code> span. Flex-centered in surface background with <code>--radius-lg</code>. Use for any visual slot — screenshots, photos, illustrations.
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Data Table — .data-row / .table-row / .cell</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="data-row-demo even" style="font-size:10px;font-weight:600;color:var(--color-text-muted)">
+            <span>Feature</span><span>Q1</span><span>Q2</span><span>Q3</span>
+          </div>
+          <div class="data-row-demo">
+            <span>AI Builder</span>
+            <span style="color:#00c875">Done</span>
+            <span style="color:#6164ff">In progress</span>
+            <span style="color:#a0a0a0">—</span>
+          </div>
+          <div class="data-row-demo even">
+            <span>Automations</span>
+            <span style="color:#00c875">Done</span>
+            <span style="color:#00c875">Done</span>
+            <span style="color:#6164ff">In progress</span>
+          </div>
+          <div class="data-row-demo">
+            <span>API v3</span>
+            <span style="color:#a0a0a0">—</span>
+            <span style="color:#ffcb00">Planned</span>
+            <span style="color:#6164ff">In progress</span>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          Odd rows get <code>--color-surface</code> via <code>:nth-child(odd)</code>. Border-radius is <code>--radius-sm</code>. Set <code>grid-template-columns</code> per table.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =========================================== CHARTS -->
+<section class="section" id="charts">
+  <div class="section-head">
+    <h2 class="section-title">Charts &amp; Data Viz</h2>
+    <span class="section-note">Pure CSS — no external libraries · animated on load · all colors via token vars</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <!-- Bar chart — full width -->
+    <div class="card">
+      <div class="label">Bar Chart — .chart-container / .bars-row / .bar-group / .bar / .bar-purple / .bar-purple-light</div>
+      <div class="chart-ex">
+        <div class="chart-ex-title">Deployment Velocity — Q1 → Q4</div>
+        <div class="chart-ex-body">
+          <div class="chart-ex-yaxis">
+            <span>120</span><span>90</span><span>60</span><span>30</span><span>0</span>
+          </div>
+          <div class="chart-ex-plot">
+            <div class="chart-ex-gridlines">
+              <div class="chart-ex-gridline"></div>
+              <div class="chart-ex-gridline"></div>
+              <div class="chart-ex-gridline"></div>
+              <div class="chart-ex-gridline"></div>
+            </div>
+            <div class="chart-ex-bars">
+              <div class="chart-ex-group">
+                <div class="chart-ex-group-bars">
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">72</div><div class="chart-ex-bar bar-purple" style="height:60%"></div></div>
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">85</div><div class="chart-ex-bar bar-light" style="height:71%"></div></div>
+                </div>
+                <div class="chart-ex-xlabel">Q1</div>
+              </div>
+              <div class="chart-ex-group">
+                <div class="chart-ex-group-bars">
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">91</div><div class="chart-ex-bar bar-purple" style="height:76%"></div></div>
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">90</div><div class="chart-ex-bar bar-light" style="height:75%"></div></div>
+                </div>
+                <div class="chart-ex-xlabel">Q2</div>
+              </div>
+              <div class="chart-ex-group">
+                <div class="chart-ex-group-bars">
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">108</div><div class="chart-ex-bar bar-purple" style="height:90%"></div></div>
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">95</div><div class="chart-ex-bar bar-light" style="height:79%"></div></div>
+                </div>
+                <div class="chart-ex-xlabel">Q3</div>
+              </div>
+              <div class="chart-ex-group">
+                <div class="chart-ex-group-bars">
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">119</div><div class="chart-ex-bar bar-purple" style="height:99%"></div></div>
+                  <div class="chart-ex-barwrap"><div class="chart-ex-bar-label">100</div><div class="chart-ex-bar bar-light" style="height:83%"></div></div>
+                </div>
+                <div class="chart-ex-xlabel">Q4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-ex-legend">
+          <div class="chart-ex-leg-item"><div class="chart-ex-dot" style="background:#6164ff"></div><span>Actual</span></div>
+          <div class="chart-ex-leg-item"><div class="chart-ex-dot" style="background:#8A99FF"></div><span>Target</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <!-- Donut chart -->
+      <div class="card">
+        <div class="label">Donut Chart — .donut-chart / .donut-wrap / .donut-center / .pie-legend</div>
+        <div style="display:flex;align-items:center;gap:32px;padding:8px 0">
+          <div class="donut-ex-wrap">
+            <div class="donut-ex-chart"></div>
+            <div class="donut-ex-center">
+              <div class="donut-ex-val" style="color:#fff">62%</div>
+              <div class="donut-ex-lbl">Core</div>
+            </div>
+          </div>
+          <div class="donut-ex-legend">
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#6164ff"></div><span class="donut-ex-name">Core Platform</span><span class="donut-ex-pct">62%</span></div>
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#ffcb00"></div><span class="donut-ex-name">Integrations</span><span class="donut-ex-pct">24%</span></div>
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#00c875"></div><span class="donut-ex-name">Analytics</span><span class="donut-ex-pct">14%</span></div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          Set <code>background: conic-gradient(#6164ff 0% 62%, #ffcb00 62% 86%, #00c875 86% 100%)</code> on <code>.donut-chart</code>. The mask punches a hole at 54% radius.
+        </div>
+      </div>
+
+      <!-- Pie chart -->
+      <div class="card">
+        <div class="label">Pie Chart — .pie-chart / .pie-wrap / .pie-legend</div>
+        <div style="display:flex;align-items:center;gap:32px;padding:8px 0">
+          <div class="pie-ex-chart"></div>
+          <div class="donut-ex-legend">
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#6164ff"></div><span class="donut-ex-name">Enterprise</span><span class="donut-ex-pct">45%</span></div>
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#00c875"></div><span class="donut-ex-name">Mid-market</span><span class="donut-ex-pct">33%</span></div>
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#ffcb00"></div><span class="donut-ex-name">SMB</span><span class="donut-ex-pct">14%</span></div>
+            <div class="donut-ex-leg"><div class="donut-ex-dot" style="background:#ff3d57"></div><span class="donut-ex-name">Other</span><span class="donut-ex-pct">8%</span></div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          Same conic-gradient as donut, without the mask. Use <code>.pie-chart</code> for filled segments, <code>.donut-chart</code> for ring variant.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =========================================== TEMPLATES -->
+<section class="section" id="templates">
+  <div class="section-head">
+    <h2 class="section-title">Slide Templates</h2>
+    <span class="section-note">19 template classes defined in design-system.css</span>
+  </div>
+  <div class="card" style="padding:24px;">
+    <p style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin:0;">
+      All 14 <code>tmpl-*</code> layout classes with live previews, component combinations, and usage examples are in
+      <a href="slide-templates.html" style="color:var(--color-purple);font-weight:600;text-decoration:none;">slide-templates.html</a>
+      — the single source of truth for all slide layouts.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-cover</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-cover-split</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-cover-image</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-cover-gallery</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-cover-speaker</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-cover-speakers</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-speaker</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-center</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-twocol</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-compare</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-features</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-content-img</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-quote</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-stats</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-steps</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-timeline</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-3col</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-4col</code>
+      <code style="font-size:11px;background:var(--color-surface-alt);padding:2px 8px;border-radius:4px;color:var(--color-purple);">tmpl-image-cards</code>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================== DESIGN RULES -->
+<section class="section" id="rules">
+  <div class="section-head">
+    <h2 class="section-title">Design Rules</h2>
+    <span class="section-note">CSS lockdown blocks in design-system.css enforce these at runtime</span>
+  </div>
+  <div class="rules-grid">
+
+    <div class="rule-card">
+      <div class="rule-hd">
+        <div class="rule-icon" style="background:#6164ff22">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6164ff" stroke-width="2">
+            <path d="M4 7h16M4 12h10M4 17h7"/>
+          </svg>
+        </div>
+        <div class="rule-title">Two Font Weights Only</div>
+      </div>
+      <div class="rule-body">
+        Import only <code>wght@400;600</code>. The system uses <span class="do">Regular (400)</span> for body and most headings, <span class="do">SemiBold (600)</span> for h1 and emphasis.<br><br>
+        <span class="dont">Never use</span> 300, 500, or 700+. Those tokens are aliased to 400/600 in design-system.css.
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-hd">
+        <div class="rule-icon" style="background:#ffcb0022">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffcb00" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+          </svg>
+        </div>
+        <div class="rule-title">Zero Letter Spacing</div>
+      </div>
+      <div class="rule-body">
+        All <code>--tracking-*</code> tokens resolve to <code>0</code>. Poppins already ships at the right optical tracking.<br><br>
+        <span class="dont">Never</span> set a custom <code>letter-spacing</code> on any slide element. The lockdown block enforces <code>letter-spacing: normal !important</code> on all <code>.slide-container *</code>.
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-hd">
+        <div class="rule-icon" style="background:#ff3d5722">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ff3d57" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+        <div class="rule-title">No Italics</div>
+      </div>
+      <div class="rule-body">
+        Italic is not part of the system. <code>em</code>, <code>i</code>, <code>.italic</code>, and any element with an inline <code>font-style:italic</code> are all forced upright via <code>font-style: normal !important</code>.<br><br>
+        Use <code>.highlight</code> or <code>.highlight--bold</code> for emphasis instead.
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-hd">
+        <div class="rule-icon" style="background:#00c87522">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00c875" stroke-width="2">
+            <path d="M5 12l5 5L20 7"/>
+          </svg>
+        </div>
+        <div class="rule-title">One Highlight Per Headline</div>
+      </div>
+      <div class="rule-body">
+        <span class="do">.highlight</span> — color only (yellow / purple). Weight stays as-is.<br>
+        <span class="do">.highlight--bold</span> — weight only (600). Color stays as-is.<br><br>
+        <span class="dont">Never combine</span> both on the same word. Choose one axis — color or weight, never both.
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-hd">
+        <div class="rule-icon" style="background:#6164ff22">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6164ff" stroke-width="2">
+            <path d="M4 6h16M4 10h16M4 14h10"/>
+          </svg>
+        </div>
+        <div class="rule-title">No Dividers, No Uppercase</div>
+      </div>
+      <div class="rule-body">
+        <span class="dont">Never</span> add horizontal rules or decorative separator lines between slide sections — whitespace and typographic hierarchy carry the structure.<br><br>
+        <span class="dont">Never</span> use <code>text-transform: uppercase</code> on headings. Poppins is designed for sentence or title case only.
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-hd">
+        <div class="rule-icon" style="background:#00c87522">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00c875" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M9 3v18M3 9h6"/>
+          </svg>
+        </div>
+        <div class="rule-title">Poppins Everywhere</div>
+      </div>
+      <div class="rule-body">
+        The type lockdown block forces <code>font-family: 'Poppins', sans-serif !important</code> on every element. No serif fallbacks, no system fonts.<br><br>
+        Only <code>code</code>, <code>pre</code>, and <code>.mono</code> elements use SF Mono / Fira Code.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="page-footer">
+  <svg style="height:14px;width:auto;vertical-align:middle;margin-right:6px;" viewBox="0 0 48 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5.68474 35.762C3.70108 35.7602 1.87466 34.7272 0.914601 33.0642C-0.0454546 31.4011 0.0120846 29.3698 1.06488 27.7591L10.8879 12.7341C11.8969 11.0981 13.7529 10.1154 15.7356 10.1675C17.7182 10.2196 19.5153 11.2982 20.4292 12.9847C21.3431 14.6713 21.2298 16.7001 20.1335 18.2836L10.3163 33.3086C9.31775 34.8373 7.56703 35.7647 5.68474 35.762Z" fill="#FB275D"/>
+    <path d="M22.4209 35.7618C20.4405 35.7601 18.6171 34.7296 17.6586 33.0704C16.7001 31.4113 16.7576 29.3849 17.8086 27.778L27.6127 12.7887C28.6058 11.1288 30.4684 10.1226 32.4659 10.1668C34.4635 10.211 36.2755 11.2985 37.1875 13.0005C38.0995 14.7025 37.9651 16.7459 36.8373 18.325L27.0332 33.3143C26.0386 34.836 24.296 35.7607 22.4209 35.7618Z" fill="#FFCC00"/>
+    <path d="M38.7383 35.7925C41.7384 35.7925 44.1705 33.3647 44.1705 30.3698C44.1705 27.3749 41.7384 24.947 38.7383 24.947C35.7382 24.947 33.3062 27.3749 33.3062 30.3698C33.3062 33.3647 35.7382 35.7925 38.7383 35.7925Z" fill="#00CA72"/>
+  </svg>
+  Design System v2 &nbsp;·&nbsp; Poppins wght@400;600 &nbsp;·&nbsp; 8 slide templates &nbsp;·&nbsp; 6 design rules
+</footer>
+
+<script>
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('btn-dark').classList.toggle('active', t === 'dark');
+    document.getElementById('btn-light').classList.toggle('active', t === 'light');
+  }
+</script>
+
+</body>
+</html>

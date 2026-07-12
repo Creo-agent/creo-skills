@@ -1,0 +1,1403 @@
+/* monday.com Design System — type rule: Poppins Regular (400) + SemiBold (600) only.
+   Importing only these two weights; any font-weight value falls back to the nearest. */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+
+  /* Font Size Scale */
+  --text-display: 10.5vmin;
+  --text-h1: 8vmin;
+  --text-h2: 6vmin;
+  --text-h3: 4vmin;
+  --text-h4: 3vmin;
+  --text-body: 2.2vmin;
+  --text-body-sm: 1.8vmin;
+  --text-caption: 1.4vmin;
+
+  /* Font Weights — Poppins ships only Regular (400) and SemiBold (600).
+     Light and Medium tokens collapse onto these to enforce the two-weight rule. */
+  --weight-light: 400;
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-semibold: 600;
+
+  /* Line Heights */
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* Letter Spacing — system-wide value is 0 (Poppins default).
+     Tokens preserved for back-compat but all resolve to normal. */
+  --tracking-tight: 0;
+  --tracking-normal: 0;
+  --tracking-none: 0;
+
+  /* ============================================
+     COLORS
+     ============================================ */
+
+  /* Backgrounds */
+  --color-bg: #000000;
+  --color-surface: #232427;
+  --color-surface-alt: #2D3035;
+
+  /* Text */
+  --color-text: #ffffff;
+  --color-text-secondary: #c3ced8;
+  --color-text-muted: #a0a0a0;
+
+  /* Brand Accents */
+  --color-purple: #6164ff;
+  --color-purple-light: #8A99FF;
+  --color-red: #ff3d57;
+  --color-yellow: #ffcb00;
+  --color-green: #00c875;
+
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.15);
+  --color-border-strong: rgba(255, 255, 255, 0.8);
+
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+
+  --radius-xs: 0.5vmin;
+  --radius-sm: 1vmin;
+  --radius-md: 2vmin;
+  --radius-lg: 3vmin;
+  --radius-xl: 4vmin;
+  --radius-full: 999px;
+
+  /* ============================================
+     SPACING
+     ============================================ */
+
+  --space-1: 0.5vmin;
+  --space-2: 1vmin;
+  --space-3: 1.5vmin;
+  --space-4: 2vmin;
+  --space-5: 3vmin;
+  --space-6: 4vmin;
+  --space-7: 5vmin;
+  --space-8: 6vmin;
+  --space-9: 8vmin;
+  --space-10: 10vmin;
+
+  /* ============================================
+     ICONS
+     ============================================ */
+
+  --icon-xs: 3vmin;
+  --icon-sm: 5vmin;
+  --icon-md: 7vmin;
+  --icon-lg: 10vmin;
+  --icon-xl: 15vmin;
+
+  /* ============================================
+     SLIDE LAYOUT
+     ============================================ */
+
+  --slide-padding-y: 8vmin;
+  --slide-padding-x: 10vmin;
+}
+
+/* ============================================
+   GLOBAL RESETS & BASE STYLES
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+/* ============================================
+   SLIDE CONTAINER (16:9 locked)
+   ============================================ */
+
+.slide-container {
+  width: 100vw;
+  height: 56.25vw;
+  max-height: 100vh;
+  max-width: 177.78vh;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: var(--slide-padding-y) var(--slide-padding-x);
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITY CLASSES
+   ============================================ */
+
+.text-display {
+  font-size: var(--text-display);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+.text-h1 {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-normal);
+  margin: 0;
+}
+
+.text-h2 {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-normal);
+  margin: 0;
+}
+
+.text-h3 {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-none);
+  margin: 0;
+}
+
+.text-h4 {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-none);
+  margin: 0;
+}
+
+.text-body {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-none);
+  margin: 0;
+}
+
+.text-body-sm {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-none);
+  margin: 0;
+}
+
+.text-caption {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-none);
+  margin: 0;
+}
+
+/* ============================================
+   WEIGHT MODIFIERS
+   ============================================ */
+
+.font-light { font-weight: var(--weight-light); }
+.font-regular { font-weight: var(--weight-regular); }
+.font-medium { font-weight: var(--weight-medium); }
+.font-semibold { font-weight: var(--weight-semibold); }
+.font-bold { font-weight: var(--weight-semibold); }
+
+/* ============================================
+   COLOR UTILITIES
+   ============================================ */
+
+.bg-surface { background-color: var(--color-surface); }
+.bg-surface-alt { background-color: var(--color-surface-alt); }
+.bg-purple { background-color: var(--color-purple); }
+.bg-red { background-color: var(--color-red); }
+.bg-yellow { background-color: var(--color-yellow); }
+.bg-green { background-color: var(--color-green); }
+
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+.text-purple { color: var(--color-purple); }
+.text-red { color: var(--color-red); }
+.text-yellow { color: var(--color-yellow); }
+.text-green { color: var(--color-green); }
+
+/* ============================================
+   ICONS (Icon Font)
+   .monday-icon base class and @font-face are
+   defined in icon-font.css — inline that file
+   alongside this one.
+   ============================================ */
+
+.monday-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  font-size: var(--icon-md);
+}
+
+.ds-icon-xs { font-size: var(--icon-xs); }
+.ds-icon-sm { font-size: var(--icon-sm); }
+.ds-icon-md { font-size: var(--icon-md); }
+.ds-icon-lg { font-size: var(--icon-lg); }
+.ds-icon-xl { font-size: var(--icon-xl); }
+
+.ds-icon-white { color: #ffffff; }
+.ds-icon-dark  { color: #323338; }
+.ds-icon-brand { color: var(--color-purple); }
+.ds-icon-muted { opacity: 0.6; }
+
+/* ============================================
+   IMAGE PLACEHOLDERS
+   Boxes marked with data-image-placeholder are
+   slots where AI-generated images should be
+   inserted during presentation generation.
+   
+   Attribute values:
+     "photo"      – general photo / illustration
+     "portrait"   – headshot / profile picture
+     "screenshot" – product UI / app screenshot
+     "icon"       – small icon or app tile
+   ============================================ */
+
+[data-image-placeholder] {
+  position: relative;
+  background-color: var(--color-surface-alt);
+}
+
+[data-image-placeholder]::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8vmin;
+  height: 8vmin;
+  opacity: 0.2;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-image-placeholder="portrait"]::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+}
+
+[data-image-placeholder="screenshot"]::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z'/%3E%3C/svg%3E");
+}
+
+[data-image-placeholder="icon"]::after {
+  width: 4vmin;
+  height: 4vmin;
+}
+
+[data-image-placeholder]:has(.placeholder-icon)::after {
+  display: none;
+}
+
+/* ============================================
+   IMAGE PLACEHOLDER (hero style)
+   Use .img-placeholder instead of
+   [data-image-placeholder] for screenshot/visual
+   slots. Renders a flex-centered surface box
+   with inline SVG icon + label — matches the
+   cover slide hero placeholder visual.
+
+   Required HTML pattern:
+     <div class="img-placeholder">
+       <svg ...>...</svg>
+       <span class="placeholder-label">[Description]</span>
+     </div>
+
+   Size is set by the layout container (e.g.
+   .image-col > div sets width/height). This
+   class only handles visual appearance.
+   ============================================ */
+
+.img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.img-placeholder .placeholder-label {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-medium);
+}
+
+[data-theme="light"] .img-placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   ENTRANCE ANIMATION KEYFRAMES
+   ============================================ */
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(1.5vmin);
+  }
+}
+
+@keyframes revealFade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes chartBarGrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes chartScaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes chartLineDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes chartFadeUp {
+  from { opacity: 0; transform: translateY(1.5vmin); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+
+/* ============================================
+   CHARTS & DATA VIZ
+   ============================================ */
+
+.chart-container {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 2vmin 2.5vmin 1.5vmin;
+  display: flex;
+  flex-direction: column;
+  gap: 1vmin;
+}
+
+.chart-title {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+
+.chart-body {
+  flex: 1;
+  display: flex;
+  gap: 0.5vmin;
+  min-height: 0;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  width: 4.5vmin;
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  padding-bottom: 2vmin;
+}
+
+.chart-plot {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-lines {
+  position: absolute;
+  inset: 0 0 2vmin 0;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.grid-line {
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.bars-row {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.8vmin;
+  padding-bottom: 2vmin;
+}
+
+.bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.bar-group-bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3vmin;
+  width: 100%;
+}
+
+.bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  width: 100%;
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  transform-origin: bottom;
+  animation: chartBarGrow 0.6s ease-out both;
+}
+
+.bar-top-label {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.bar-x-label {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Bar fill colors */
+.bar-purple       { background-color: var(--color-purple); }
+.bar-purple-light { background-color: var(--color-purple-light); }
+.bar-green        { background-color: var(--color-green); }
+.bar-yellow       { background-color: var(--color-yellow); }
+.bar-red          { background-color: var(--color-red); }
+
+/* Staggered animation delays (increment 0.08s per group) */
+.bar-group:nth-child(1) .bar { animation-delay: 0.10s; }
+.bar-group:nth-child(2) .bar { animation-delay: 0.18s; }
+.bar-group:nth-child(3) .bar { animation-delay: 0.26s; }
+.bar-group:nth-child(4) .bar { animation-delay: 0.34s; }
+.bar-group:nth-child(5) .bar { animation-delay: 0.42s; }
+.bar-group:nth-child(6) .bar { animation-delay: 0.50s; }
+.bar-group:nth-child(7) .bar { animation-delay: 0.58s; }
+.bar-group:nth-child(8) .bar { animation-delay: 0.66s; }
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2vmin;
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5vmin;
+}
+
+.legend-dot {
+  width: 1vmin;
+  height: 1vmin;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   STAT / METRIC BLOCKS
+   ============================================ */
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stat-value {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.stat-value-hero {
+  font-size: 15vmin;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+/* ============================================
+   TABLE
+   Zebra-stripe rows with gap spacing.
+   Set grid-template-columns per table (content-dependent).
+   Pattern: 2.5fr repeat(N, 1fr) — wide label col + equal data cols.
+   ============================================ */
+
+.table-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.data-rows-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Set grid-template-columns inline or in a local style per table */
+.table-row {
+  display: grid;
+  align-items: center;
+  width: 100%;
+  font-size: var(--text-h4);
+}
+
+.header-row {
+  font-weight: var(--weight-regular);
+  color: var(--color-text);
+}
+
+.header-row .cell {
+  white-space: nowrap;
+}
+
+.data-row {
+  padding: var(--space-4) 0;
+  animation: chartFadeUp 0.5s ease-out both;
+  border-radius: var(--radius-sm);
+}
+
+.data-rows-wrapper .data-row:nth-child(odd) {
+  background-color: var(--color-surface);
+}
+
+/* Row entrance stagger */
+.data-rows-wrapper .data-row:nth-child(1) { animation-delay: 0.05s; }
+.data-rows-wrapper .data-row:nth-child(2) { animation-delay: 0.13s; }
+.data-rows-wrapper .data-row:nth-child(3) { animation-delay: 0.21s; }
+.data-rows-wrapper .data-row:nth-child(4) { animation-delay: 0.29s; }
+.data-rows-wrapper .data-row:nth-child(5) { animation-delay: 0.37s; }
+.data-rows-wrapper .data-row:nth-child(6) { animation-delay: 0.45s; }
+.data-rows-wrapper .data-row:nth-child(7) { animation-delay: 0.53s; }
+.data-rows-wrapper .data-row:nth-child(8) { animation-delay: 0.61s; }
+
+.cell {
+  text-align: left;
+  padding-left: var(--space-4);
+  font-weight: var(--weight-regular);
+}
+
+/* ============================================
+   NUMBERED STEPS
+   Large number + colored accent dot + body text.
+   Pattern: <div class="step-number">1<span class="dot-purple">.</span></div>
+   ============================================ */
+
+.step-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.step-number {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  margin: 0;
+}
+
+.step-text {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Colored accent dot — applied to punctuation inside .step-number */
+.dot-purple { color: var(--color-purple); }
+.dot-yellow { color: var(--color-yellow); }
+.dot-green  { color: var(--color-green); }
+.dot-red    { color: var(--color-red); }
+.dot-blue   { color: var(--color-purple); } /* alias — blue = purple in monday palette */
+
+/* ============================================
+   CHAPTER / AGENDA CARDS
+   Numbered circle + text label for agenda slides.
+   Use inside tmpl-features or tmpl-twocol with
+   a vertical stack of cards on the right column.
+   ============================================ */
+
+.chapter-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-7);
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.number-circle {
+  width: 7vmin;
+  height: 7vmin;
+  background-color: var(--color-purple);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--text-h4);
+  font-weight: var(--weight-regular);
+  flex-shrink: 0;
+}
+
+.chapter-text {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-regular);
+}
+
+.chapter-text span {
+  font-weight: var(--weight-light);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   PIE & DONUT CHARTS
+   Segment colors and degree stops are set via
+   inline conic-gradient() per chart.
+   ============================================ */
+
+/* Base shape — set background: conic-gradient(...) inline */
+.pie-chart {
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: chartScaleIn 0.6s ease-out both;
+}
+
+/* Donut = pie + mask that punches center hole (~55% radius) */
+.donut-chart {
+  border-radius: 50%;
+  flex-shrink: 0;
+  -webkit-mask: radial-gradient(closest-side, transparent 54%, black 55%);
+          mask: radial-gradient(closest-side, transparent 54%, black 55%);
+  animation: chartScaleIn 0.6s ease-out both;
+}
+
+/* Wrapper that holds the chart + optional center label */
+.donut-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.donut-center {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center-value {
+  font-size: calc(var(--text-h2) * 0.81);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.donut-center-label {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+/* Layout: chart beside legend */
+.pie-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pie-legend-dot {
+  width: 1.2vmin;
+  height: 1.2vmin;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+.pie-legend-label {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.pie-legend-value {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  padding-left: var(--space-3);
+}
+
+/* ============================================
+   SPEAKER COMPONENTS
+   Circular portrait placeholders + purple info cards
+   for presenter slides. Used by tmpl-cover-speaker,
+   tmpl-cover-speakers, and tmpl-speaker.
+   ============================================ */
+
+.speaker-top-card {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  flex: 1.6;
+  padding: var(--space-9) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.speaker-bottom {
+  display: flex;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.speaker-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.speaker-group {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.profile-circle {
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-circle svg {
+  width: 40%;
+  height: 40%;
+  opacity: 0.3;
+}
+
+.profile-circle-lg {
+  width: 28vmin;
+  height: 28vmin;
+}
+
+.profile-circle-md {
+  width: 22vmin;
+  height: 22vmin;
+}
+
+.profile-circle-xl {
+  width: 72vmin;
+  height: 72vmin;
+}
+
+.speaker-info-card {
+  background-color: var(--color-purple);
+  border-radius: var(--radius-xl);
+  flex: 1;
+  padding: var(--space-8) var(--space-9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+}
+
+.speaker-name {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  margin: 0;
+}
+
+.speaker-role {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-regular);
+  margin: 0;
+  opacity: 0.9;
+}
+
+.speaker-detail-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  z-index: 2;
+}
+
+.speaker-intro {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-regular);
+  margin: 0;
+}
+
+.speaker-name-hero {
+  font-size: 15vmin;
+  font-weight: var(--weight-semibold);
+  margin: 0;
+  line-height: 0.95;
+}
+
+.speaker-bio {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-regular);
+  margin-top: var(--space-3);
+  max-width: 85%;
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.speaker-portrait {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* ============================================
+   COVER — IMAGE (Page 009 pattern)
+   Left text column + right oversized image placeholder.
+   The image is absolute-positioned to bleed off the right edge.
+   ============================================ */
+
+.cover-image-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  z-index: 2;
+}
+
+.cover-image-image {
+  position: absolute;
+  right: calc(var(--slide-padding-x) * -0.6);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 62vmin;
+  height: 62vmin;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: rgba(255, 255, 255, 0.25);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+[data-theme="light"] .cover-image-image {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.cover-image-image svg {
+  width: 8vmin;
+  height: 8vmin;
+  opacity: 0.4;
+}
+
+.cover-image-image .placeholder-label {
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+
+/* ============================================
+   COVER — WORKSHOP (Page 010 pattern)
+   2×2 grid: bordered title card left (spans both rows),
+   2 image slots top-right, purple info card bottom-right.
+   ============================================ */
+
+.cover-title-card {
+  grid-row: span 2;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-9);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.cover-photos-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.cover-photo-slot {
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-photo-slot svg {
+  width: 5vmin;
+  height: 5vmin;
+  opacity: 0.3;
+}
+
+.cover-info-card {
+  background-color: var(--color-purple);
+  border-radius: var(--radius-lg);
+  padding: var(--space-9);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--space-2);
+}
+
+.cover-info-text {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-regular);
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ============================================
+   QUOTE / TESTIMONIAL
+   Full-width surface box with large quote mark,
+   quote text, and attribution block.
+   Use with tmpl-quote template class.
+   ============================================ */
+
+.quote-box {
+  position: relative;
+  background-color: var(--color-surface);
+  width: 100%;
+  border-radius: var(--radius-md);
+  padding: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.quote-mark {
+  position: absolute;
+  top: var(--space-6);
+  left: var(--space-10);
+  font-size: 7vmin;
+  line-height: 1;
+  color: var(--color-purple);
+  user-select: none;
+  pointer-events: none;
+}
+
+.quote-text {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  padding-top: var(--space-5);
+  margin: 0;
+}
+
+.attribution {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-7);
+}
+
+.attribution .person-name {
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+}
+
+.attribution .person-title {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--color-text-secondary);
+}
+
+.attribution .company {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.attribution .company-name {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+}
+
+/* ============================================
+   TIMELINE
+   Horizontal line with positioned point circles
+   and labels. Use with tmpl-timeline template.
+   ============================================ */
+
+.timeline-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 0.3vmin;
+  background-color: var(--color-border-strong);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.timeline-point {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.point-circle {
+  width: 2vmin;
+  height: 2vmin;
+  background-color: var(--color-bg);
+  border: 0.3vmin solid var(--color-border-strong);
+  border-radius: 50%;
+}
+
+.point-active .point-circle {
+  width: 3vmin;
+  height: 3vmin;
+}
+
+.point-active::before {
+  content: '';
+  position: absolute;
+  top: -2.5vmin;
+  width: 8vmin;
+  height: 8vmin;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+[data-theme="light"] .point-active::before {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.point-label {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  position: absolute;
+  top: 6vmin;
+  white-space: nowrap;
+}
+
+/* ============================================
+   LIGHT THEME
+   Apply by setting data-theme="light" on <html>.
+   Brand accent colors (purple, red, yellow, green)
+   are intentionally unchanged — they are brand colors.
+   ============================================ */
+
+[data-theme="light"] {
+  /* Backgrounds */
+  --color-bg:          #FFFFFF;
+  --color-surface:     #F0F2F5;
+  --color-surface-alt: #E3E6EE;
+
+  /* Text */
+  --color-text:           #1F2D3D;
+  --color-text-secondary: #455A73;
+  --color-text-muted:     #8FA0B3;
+
+  /* Borders */
+  --color-border:        rgba(0, 0, 0, 0.10);
+  --color-border-strong: rgba(0, 0, 0, 0.65);
+}
+
+/* Icons: ds-icon-white renders white on dark, dark on light — no HTML changes needed */
+[data-theme="light"] .ds-icon-white { color: var(--color-text); }
+[data-theme="light"] .ds-icon-dark  { color: #ffffff; }
+
+/* Placeholder icons are fill='white' — invert them so they read dark on light surfaces */
+[data-theme="light"] [data-image-placeholder]::after { filter: invert(1); }
+
+/* ============================================
+   HEADLINE HIGHLIGHT — RULE
+   ============================================
+   Use AT MOST ONE highlight per headline.
+   Apply EITHER color OR semibold weight — never both.
+
+   .highlight        → color only (yellow on dark, purple on light)
+   .highlight--bold  → semibold only (no color shift)
+
+   Both variants stay at headline weight otherwise (regular).
+   Combining color + weight reads as "two highlights" and breaks the rule. */
+.highlight       { color: var(--color-yellow); font-weight: inherit; }
+[data-theme="light"] .highlight { color: var(--color-purple); }
+.highlight--bold { color: inherit; font-weight: var(--weight-semibold); }
+
+/* ============================================
+   SLIDE TEMPLATE CLASSES
+   Eight layout archetypes for Strategy B decks.
+   Inline design-system.css and apply these
+   classes to .slide-container elements.
+
+   Usage: class="slide-container tmpl-xxx slide-N"
+   Always pair with:
+     .slide-container:not(.slide-active){display:none!important}
+   ============================================ */
+
+.tmpl-cover.slide-active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tmpl-center.slide-active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.tmpl-twocol.slide-active {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-9);
+  align-items: center;
+}
+
+.tmpl-compare.slide-active {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: stretch;
+}
+
+.tmpl-features.slide-active {
+  display: grid;
+  grid-template-columns: 0.6fr 1.4fr;
+  gap: var(--space-9);
+  align-items: center;
+}
+
+.tmpl-content-img.slide-active {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-9);
+  align-items: center;
+}
+
+/* NEW: full-slide metrics/KPI overview */
+.tmpl-stats.slide-active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-7);
+}
+
+/* NEW: process/workflow with horizontal step cards */
+.tmpl-steps.slide-active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-6);
+}
+
+/* Cover with bordered top section + colored bottom bar */
+.tmpl-cover-split.slide-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Product cover: left text + right large image placeholder (absolute positioned) */
+.tmpl-cover-image.slide-active {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Workshop/event cover: 2×2 grid with title card spanning left */
+.tmpl-cover-gallery.slide-active {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* Cover with single speaker: bordered top card + portrait + info card */
+.tmpl-cover-speaker.slide-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Cover with two speakers: bordered top card + 2-column speaker groups */
+.tmpl-cover-speakers.slide-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Speaker detail: left text (intro + large name + bio) + right large portrait */
+.tmpl-speaker.slide-active {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+}
+
+/* Full-width quote/testimonial box */
+.tmpl-quote.slide-active {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* Horizontal timeline with labeled points */
+.tmpl-timeline.slide-active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-10);
+}
+
+/* 3-column card grid (title + 3 equal cards) */
+.tmpl-3col.slide-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* 4-column card grid (title + 4 equal cards) */
+.tmpl-4col.slide-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Image-top card grid (title + 3 cards with image headers) */
+.tmpl-image-cards.slide-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ============================================
+   HEADLINE LETTER-SPACING LOCKDOWN
+   Poppins ships at the right tracking — never
+   tighten or open headlines.
+   ============================================ */
+.slide-container h1, .slide-container h2, .slide-container h3,
+.slide-container h4, .slide-container h5, .slide-container h6,
+.slide-container .stat-value, .slide-container .stat-value-hero,
+.slide-container .donut-center-value, .slide-container [class*="display"],
+.slide-container [class*="title"], .slide-container [class*="headline"] {
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+}
+
+/* ============================================
+   TYPE LOCKDOWN — Poppins Regular + SemiBold only
+   ============================================ */
+
+/* Force every text element to use Poppins. No serif fallbacks, no system fonts. */
+html, body, h1, h2, h3, h4, h5, h6, p, span, div, li, a, button, input, textarea,
+.slide-container, .slide-container * {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Code blocks may use mono — but everything else is Poppins. */
+code, pre, kbd, samp, .mono { font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace !important; }
+
+/* Strip all custom letter-spacing across slides. Poppins ships with the right tracking. */
+.slide-container, .slide-container * { letter-spacing: normal !important; }
+
+/* Italic is not part of the system. Any element marked italic renders upright. */
+em, i, .italic, [style*="italic"] { font-style: normal !important; }
