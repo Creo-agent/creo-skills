@@ -27,7 +27,9 @@ Keywords: `figma`, `pixel perfect`, `match the figma`, `exact positions`, `scatt
 2. Computes a scale factor (target canvas ÷ Figma frame) and maps every node to absolute px.
 3. Preserves draw-order stacking (intentional overlaps).
 4. Emits absolute-positioned HTML/CSS or a coordinates array for Remotion.
-5. Verifies element-by-element against a `get_screenshot`.
+5. For repeated elements, pulls **one** node via `get_design_context`, builds the component
+   once, and swaps content from an array (incl. cropping a large illustration into a small avatar).
+6. Verifies element-by-element against a `get_screenshot`.
 
 ## Requirements
 

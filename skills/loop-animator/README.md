@@ -39,4 +39,4 @@ Use it by typing `/loop-animator`, or just describe what you want.
 
 ---
 
-**Owner:** Elior Siegelwachs · **Last updated:** 2026-07-12
+**Owner:** Elior Siegelwachs · **Last updated:** 2026-07-13

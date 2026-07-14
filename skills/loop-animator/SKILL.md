@@ -23,9 +23,12 @@ Keywords: `loop`, `auto-play`, `repeat`, `run continuously`, `seamless`, `yoyo`,
 
 ## What This Skill Does
 
-- Chooses the loop shape (yoyo / restart / continuous) — yoyo for clean reveals.
-- Builds one GSAP timeline with `repeat: -1`, `yoyo`, `repeatDelay`.
-- Adds ramping-up stagger, collapse-to-a-point motion, and layer cross-fades.
+- Chooses the loop shape (yoyo / restart / continuous / **forward-reset**) — yoyo for clean
+  reveals; forward-reset when a distinct end-screen must NOT play in reverse.
+- Builds one GSAP timeline (`repeat: -1`, `yoyo`/`repeatDelay`, or a forward timeline whose
+  end state is engineered to equal its start).
+- Adds ramping-up stagger, collapse-to-a-point (and its inverse, **emerge-from-a-point**),
+  directional stagger lead, and layer cross-fades.
 - Uses a fixed export-ready stage + JS scaler when destined for video/social.
 - Verifies deterministically by seeking timeline states and sampling `.time()`.
 

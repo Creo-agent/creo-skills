@@ -24,12 +24,15 @@ Keywords: `gif`, `mp4`, `webm`, `render`, `export`, `video file`, `downloadable`
 
 1. **Asks for the output spec first** — dimensions/resolution, fps, format, and any hard
    size limit — because these drive the composition and render flags.
-2. Scaffolds a Remotion project and ports the motion to frame-based (`useCurrentFrame`).
-3. Reproduces seamless loops via a triangle-wave timeline.
+2. Scaffolds a Remotion project and ports the motion to frame-based (`useCurrentFrame`),
+   loading web fonts via `@remotion/google-fonts` and rebuilding pseudo-elements as real divs.
+3. Reproduces seamless loops via a triangle-wave timeline — or a **forward-loop with
+   enter/exit envelopes** when a distinct phase must not play in reverse.
 4. Verifies with still renders, then renders GIF/MP4 and tunes `--scale` / `--every-nth-frame`
    to hit the size target.
 
 ## Entry Point
 
 Load **PROMPT.md** for the output-spec questions, project scaffold, GSAP→Remotion easing
-cheat-sheet, the triangle-wave loop, and the GIF size-tradeoff levers.
+cheat-sheet, the triangle-wave *and* forward-loop recipes, font/pseudo-element gotchas, and
+the GIF size-tradeoff levers.

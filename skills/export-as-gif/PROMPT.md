@@ -49,6 +49,15 @@ remotion/
   - `power1.inOut` → `Easing.inOut(Easing.quad)`
   - `'none'` → linear (default)
 - Reference assets with `staticFile("name.avif")`; use `<Img>` (waits for load).
+- **Fonts must be loaded**, or text renders in a fallback (wrong metrics *and* wrong look —
+  which also breaks any width-dependent layout like a marquee). Use the google-fonts helper,
+  which blocks the render until ready: `import { loadFont } from "@remotion/google-fonts/Figtree";
+  const { fontFamily } = loadFont("normal", { weights: ["400"], subsets: ["latin"], ignoreTooManyRequestsWarning: true });`
+  (limit weights/subsets — the default loads dozens and warns).
+- **Pseudo-elements don't render** here the way you'd style them per-frame: `::before`/`::after`
+  can't take frame-driven inline styles. Rebuild such layers as real child `<div>`s (e.g. a
+  gradient-stroke overlay becomes a positioned div whose `backgroundPositionX` you compute
+  from the frame).
 
 ## 3. Seamless loop = triangle-wave timeline
 Reproduce a GSAP yoyo loop by mapping frame → a local time that goes up then down, so the
@@ -63,6 +72,27 @@ const ts = t / fps;   // drive all interpolations off ts
 ```
 Set `durationInFrames = (FORWARD + HOLD + FORWARD + HOLD) * fps` and export it so Root
 stays in sync.
+
+### …or a forward-loop with envelopes (when a phase must NOT reverse)
+The triangle-wave replays the middle backwards — wrong when the source has a distinct
+sequential phase (a second screen that appears, then leaves). Mirror the HTML *forward-reset*
+loop instead: drive everything off real time `s = frame / fps` and give each element an
+**enter/exit envelope** so it rises then falls on its own, engineering the total duration so
+the last frame equals the first:
+```ts
+const enterP = interpolate(s, [inStart, inStart + IN_DUR], [0, 1], { extrapolateLeft:"clamp", extrapolateRight:"clamp", easing });
+const exitP  = interpolate(s, [outStart, outStart + OUT_DUR], [0, 1], { extrapolateLeft:"clamp", extrapolateRight:"clamp", easing });
+const base   = enterP * (1 - exitP);          // 0 → 1 → 0
+const scale  = interpolate(base, [0, 1], [0.1, 1]);   // e.g. grow-out / collapse-back
+```
+Reverse a stagger's lead direction by indexing the start time backwards
+(`outStart = EXIT_AT + (n - 1 - i) * STAG`) rather than forwards. Confirm the last frame
+== frame 0 by rendering both stills.
+
+### Marquee / endless scroll → frame math
+A GSAP marquee becomes `x = -offset + dir * speed * s`. Because the scrolling layer is
+usually invisible at the loop boundary (faded/scaled out), you can skip seamless wrap
+entirely — a plain linear translate never shows a seam. Full technique: `marquee-carousel`.
 
 ## 4. Verify before rendering video
 Render stills at key frames (start / mid-motion / revealed) and view them:

@@ -41,4 +41,4 @@ Use it by typing `/precise-figma-composition`, or share a Figma link and ask to 
 
 ---
 
-**Owner:** Elior Siegelwachs · **Last updated:** 2026-07-12
+**Owner:** Elior Siegelwachs · **Last updated:** 2026-07-13

@@ -40,4 +40,4 @@ Use it by typing `/export-as-gif`, or just describe what you want (e.g. "render 
 
 ---
 
-**Owner:** Elior Siegelwachs · **Last updated:** 2026-07-12
+**Owner:** Elior Siegelwachs · **Last updated:** 2026-07-13
