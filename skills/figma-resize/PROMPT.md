@@ -21,7 +21,7 @@ Skill({ skill: "figma:figma-use" })
 
 Load all three tools. If any fail to resolve, tell the user the Figma MCP server is not connected and stop.
 ```
-ToolSearch({ query: "select:mcp__plugin_figma_figma__get_screenshot,mcp__plugin_figma_figma__get_metadata,mcp__plugin_figma_figma__use_figma" })
+ToolSearch({ query: "select:mcp__figma-write__get_screenshot,mcp__figma-write__get_metadata,mcp__figma-write__use_figma" })
 ```
 
 **4. Confirm all required skills are available**
@@ -222,18 +222,167 @@ if (frame.layoutMode !== 'NONE') {
 frame.resize(TARGET_W, TARGET_H);
 
 // --- Apply per-size layout rules here (see below) ---
+// --- Then apply Critical Rules 1–8 (see below) ---
 
 await frame.screenshot();
 return { success: true, frameId: frame.id, name: frame.name };
 ```
 
+---
+
+### Critical: Aspect Ratio Change Algorithm (Rules 1–8)
+
+When source and target have **different aspect ratios** (e.g. 1080×1350 → 1200×1200), use the geometric-mean uniform scale — NOT independent per-axis scaling. This prevents squashing.
+
+**Validated 2026-07-16 on Community Hub post (1080×1350 → 1200×1200).**
+
+```js
+const scaleX = TW / SW;
+const scaleY = TH / SH;
+const uScale = Math.sqrt(scaleX * scaleY);   // uniform scale, maintains all aspect ratios
+```
+
+#### For each direct child of the frame:
+
+```js
+const scaleX = TW / SW;
+const scaleY = TH / SH;
+const uScale = Math.sqrt(scaleX * scaleY);
+
+// Text/headline groups: center horizontally, scale Y only
+textGroup.x = Math.round((TW - textGroup.width) / 2);
+textGroup.y = Math.round(textGroup.y * scaleY);
+
+// All other children: uniform resize + per-axis position
+child.resize(child.width * uScale, child.height * uScale);
+child.x = child.x * scaleX;
+child.y = child.y * scaleY;
+```
+
+#### Key rules (non-negotiable on every resize):
+
+**Rule 1: Never apply scaleX to width and scaleY to height independently** — this squashes every element.
+
+**Rule 2: uScale (geometric mean) is the correct uniform factor** — not the larger or smaller of scaleX/scaleY.
+
+**Rule 3: Positions use per-axis scale** (redistributes to fill the new canvas shape) — this is correct.
+
+**Rule 4: Text groups get explicit horizontal centering**, not proportional X positioning.
+
+**Rule 5: `group.resize(w * uScale, h * uScale)` does NOT reliably preserve image rect positions inside nested mask groups.** After resizing wrapper groups, image fill rectangles inside mask groups can drift — especially in Y (image floats above the mask clip shape). Always do a post-resize pass (see Rule 7).
+
+**Rule 6: Process DIRECT children only** — don't recurse into groups. Figma's `resize()` scales all descendants internally. (Exception: image rects inside nested mask groups — see Rule 7.)
+
+**Rule 7: Post-resize — fix image rects inside mask groups using absolute bounding boxes.**
+
+After all direct children are resized, traverse the output frame to find every mask group (a GROUP containing a child with `isMask = true`). For each mask group, align the image rect to the mask shape using `absoluteBoundingBox` deltas — **do NOT simply set `image.x = mask.x`**, because sibling nodes inside a wrapper group that was previously scaled non-uniformly will have different local→canvas scale factors (k values). Using local coordinates directly will move the image to the wrong canvas position.
+
+```js
+// Post-resize image rect fix — abs-coordinate-safe
+for each mask group in the output frame (recursive search):
+  const maskShape = group.children.find(c => c.isMask);
+  const imageRect = group.children.find(c => c.fills?.some(f => f.type === 'IMAGE'));
+
+  const mAbs = maskShape.absoluteBoundingBox;   // canvas-space bounds of mask shape
+  const iAbs = imageRect.absoluteBoundingBox;   // canvas-space bounds of image rect
+
+  // Desired canvas position: image rect covers mask shape exactly
+  const deltaAbsX = mAbs.x - iAbs.x;
+  const deltaAbsY = mAbs.y - iAbs.y;
+
+  // Scale factors: how many local units per canvas pixel for this node
+  // (differs per node when wrapper groups have residual scale transforms)
+  const kX = iAbs.x !== 0 ? imageRect.x / (iAbs.x - frameAbsX) : 1;
+  const kY = iAbs.y !== 0 ? imageRect.y / (iAbs.y - frameAbsY) : 1;
+
+  // Apply: move image rect so its canvas origin matches the mask shape's canvas origin
+  imageRect.x += deltaAbsX / kX;
+  imageRect.y += deltaAbsY / kY;
+  imageRect.resize(maskShape.width, maskShape.height);
+```
+
+**Simpler shortcut (valid only when the wrapper group has no residual scale transform):**
+```js
+imageRect.x = maskShape.x;
+imageRect.y = maskShape.y;
+imageRect.resize(maskShape.width, maskShape.height);
+```
+Use this shortcut first; verify with `absoluteBoundingBox` that `imageRect.abs ≈ maskShape.abs`. If they don't match (diff > 5px), fall back to the k-factor approach above.
+
+**Rule 8: Post-resize — fix imageTransform squash on CROP-mode image fills.**
+
+`imageTransform` is NOT reliably preserved after resize. Even when using uniform uScale, image fills in CROP mode can end up with non-uniform X/Y scale factors in their `imageTransform` matrix — causing the photo to appear squashed or shifted. Always do a post-resize pass to fix this.
+
+After the position fix (Rule 7), check each image fill's `imageTransform`. If `scaleMode === 'CROP'` and the X scale (`T[0][0]`) differs from the Y scale (`T[1][1]`) by more than ~1%, apply the geometric-mean fix to make them uniform while preserving the crop center:
+
+```js
+// Validated 2026-07-16 on Community Hub 1200×1200 LI frame (3 of 5 person bubbles were broken)
+// IMPORTANT: do NOT switch CROP to FILL — FILL re-centers automatically, which changes
+// intentional face crops (e.g. zoomed-in portraits) and may show torso instead of face.
+
+for (const fill of [...imageRect.fills]) {
+  if (fill.type !== 'IMAGE' || fill.scaleMode !== 'CROP') continue;
+  const T = fill.imageTransform;  // [[a, c, tx], [b, d, ty]]
+  const scaleA = T[0][0];  // X scale
+  const scaleD = T[1][1];  // Y scale
+
+  // Skip if already uniform (tolerance: 1%)
+  if (Math.abs(scaleA - scaleD) < 0.01) continue;
+
+  // Geometric mean preserves effective area, removes squash
+  const uScale = Math.sqrt(scaleA * scaleD);
+
+  // Preserve the crop center in layer UV space
+  const centerX = T[0][2] + scaleA / 2;
+  const centerY = T[1][2] + scaleD / 2;
+  const newTx = centerX - uScale / 2;
+  const newTy = centerY - uScale / 2;
+
+  imageRect.fills = imageRect.fills.map(f =>
+    f === fill
+      ? { ...f, imageTransform: [[uScale, 0, newTx], [0, uScale, newTy]] }
+      : f
+  );
+}
+```
+
+Key nuances:
+- Only applies to `scaleMode: 'CROP'` fills. `scaleMode: 'FILL'` fills are auto-centered by Figma and are always correct.
+- Uniform scale (both axes = 0.700) with correct translation = fine, skip it.
+- Non-uniform scale (e.g. X=0.993, Y=1.089) = squash → fix with geometric mean.
+- The fix preserves the original crop center (which face portion was visible) — it only removes the squash artifact.
+
+---
+
 ### 4c: Screenshot and validate after each size
 
-Call `await frame.screenshot()` at the end of each size script. Visually check:
+Call `get_screenshot` at the end of each size. Visually check:
 - Correct dimensions
 - No clipped or overflowing text
 - Elements in the correct zones per the layout rules
 - No overlapping elements
+
+---
+
+## Mandatory QA Step — After Every use_figma Write
+
+After every `use_figma` call (first run or any fix pass), **always run the resize-qa skill before replying to the user.** Do not report results without a QA.
+
+**What QA does:**
+1. Screenshots the original master frame and the output frame (both captured via `get_screenshot`, both posted to Slack as images)
+2. Applies the full checklist: dimensions, font, integrity, layout placement, safe zones, spacing
+3. Scores defects using the weighted defect system (start at 100, deduct per defect found)
+4. Runs the 5-pillar vision inspection (Spacing & Structure, Color Fidelity, Typography, Crop Prevention, Spacing Structure)
+5. Posts a structured "VISION QA REPORT" to the Slack thread with: what is good, what went wrong, actionable fixes for the next iteration
+
+**To invoke:**
+```
+Skill({ skill: "resize-qa" })
+```
+
+Apply the skill's full workflow. Never skip or summarize it — the structured report is the deliverable.
+
+If the score is ≤79, list the fixes clearly and ask the user whether to apply them in the same reply. Do not auto-apply fixes without surfacing the QA report first.
 
 ---
 
@@ -307,11 +456,9 @@ SPACING:
 
 **Code approach (absolute-positioned frame):**
 ```js
-// Scale source positions proportionally, then override with layout rules
 const scaleX = 728 / SOURCE_W;
 const scaleY = 90 / SOURCE_H;
 
-// Position logo+CTA group on right
 const logo = frame.findOne(n => n.name.toLowerCase().includes('logo'));
 const cta = frame.findOne(n => n.name.toLowerCase().includes('cta') || n.name.toLowerCase().includes('button'));
 const headline = frame.findOne(n => n.type === 'TEXT' || n.name.toLowerCase().includes('headline'));
@@ -407,6 +554,74 @@ SPACING:
 - Headline → Visual: minimum 30px
 - Distribute elements across the 1248px usable height — no clustering or large empty gaps
 ```
+
+#### Story — Post-Placement Checks (MANDATORY, run after every Story resize)
+
+**Validated 2026-07-16 on Claude motion ad (1:1 → 9:16 Story). These three failure modes appeared in v01 and were fixed in v02.**
+
+**Check 1: Off-screen element recovery**
+
+After scaling, some sub-elements inside the visual group may have negative x values or extend beyond x=1080 — especially elements that were already near the edge in the source. Scan all descendants:
+
+```js
+// After positioning the visual group, scan for out-of-bounds children
+function findOffscreenChildren(node, frameW) {
+  const issues = [];
+  if (!node.children) return issues;
+  for (const child of node.children) {
+    const absX = child.absoluteBoundingBox?.x ?? child.x;
+    const absW = child.absoluteBoundingBox?.width ?? child.width;
+    if (absX < 0 || absX + absW > frameW) {
+      issues.push({ id: child.id, name: child.name, x: absX, right: absX + absW });
+    }
+    issues.push(...findOffscreenChildren(child, frameW));
+  }
+  return issues;
+}
+const offscreen = findOffscreenChildren(visualGroup, 1080);
+// For each: either shift the whole visualGroup left/right, or clip individually
+```
+
+If any elements are off-screen: shift the `visualGroup.x` so all content lands within x 65–1015px. Do not clip individual sub-elements unless the group is too wide to fit — in that case, apply a uniform scale-down to the whole visual group.
+
+**Check 2: Right-edge horizontal overflow**
+
+App screenshots, boards, and UI visuals with text at the right edge often clip at x=1015px. After placing the visual group:
+
+```js
+const visualRight = visualGroup.x + visualGroup.width;
+if (visualRight > 1015) {
+  // Option A: shift left so right edge = 1015
+  visualGroup.x = 1015 - visualGroup.width;
+  // Option B: if shifting violates left margin (x < 65), scale down uniformly instead
+}
+```
+
+Verify by checking `absoluteBoundingBox` of any text nodes near the right side of the visual.
+
+**Check 3: Bottom safe zone enforcement**
+
+The visual group's bottom edge must not exceed y=1517px. After placing:
+
+```js
+const visualBottom = visualGroup.y + visualGroup.height;
+if (visualBottom > 1517) {
+  visualGroup.y = 1517 - visualGroup.height;
+}
+```
+
+**Recommended starting y for visual group: 700px** (validated on Claude motion ad — keeps the board bottom at approximately y=1517 while maintaining 31px gap between logo row and board top). Use this as the default, then apply the check above to confirm.
+
+**Known limitation — inherent empty lower third:**
+
+Converting a 1:1 master to 9:16 Story always creates ~400–450px of dead space below the visual element (between the visual bottom and the y=1517 safe zone boundary). This is structural — there is no source material to fill it. Document it in the QA report as a creative decision point and offer these options to the user:
+
+1. **CTA lockup** — add a call-to-action button + optional supporting text (needs copy from user)
+2. **Brand bar** — a branded lockup (logo + tagline or URL) at the bottom of the usable zone
+3. **Background extension** — extend the background color/gradient into the empty space (no new elements)
+4. **Leave empty** — acceptable if the visual is strong enough to carry the format
+
+Do NOT invent elements to fill this space — always ask the user before adding anything that wasn't in the source.
 
 ---
 
@@ -617,6 +832,10 @@ Do NOT leave placeholder shapes — if an element is excluded, ensure no ghost o
 **Layout & Spacing**
 - [ ] Safe zones respected (10–15px for standard; 20–30px for sizes >600px)
 - [ ] For Story (1080×1920): top 269px clear (14%), bottom 403px clear (21%), left/right 65px margins (6%) — Meta official safe zones
+- [ ] For Story: all visual sub-elements within x 65–1015px (no right-edge clipping of board text, labels, or bubbles)
+- [ ] For Story: visual group bottom ≤ y=1517px (use `absoluteBoundingBox` to verify, not just `y + height`)
+- [ ] For Story: no off-screen elements (x < 0 or x+width > 1080) — run bounds sweep after resize
+- [ ] For Story: empty lower third documented as creative decision point (if >200px gap below visual to y=1517)
 - [ ] Visual hierarchy flow correct for this size (per per-size rules)
 - [ ] Logo clearspace matches source proportionally
 - [ ] Headline → subheadline gap matches source proportionally
