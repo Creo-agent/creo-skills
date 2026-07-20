@@ -1,0 +1,13 @@
+remotion-best-practices
+========================
+
+Vendored snapshot.
+
+Upstream source: github.com/remotion-dev/skills
+Upstream path:   skills/remotion/SKILL.md
+
+This skill's content — the SKILL.md and the complete rules/ directory (including
+rules/assets/) — was copied verbatim from the upstream repository above and vendored
+into the mdai-animation hub as a pinned snapshot. It is retained here for attribution.
+The hub is now the source of truth; changes are made here rather than via the upstream
+skill-manager.
