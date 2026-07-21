@@ -1,6 +1,9 @@
 ---
 name: figma-modify
-description: Modify, tweak, resize, or adapt existing Figma designs using the Figma MCP. Triggers when the user wants to change elements in an existing Figma file — layout changes, text edits, color updates, resizing to new formats, adding/removing elements, or adapting designs for different aspect ratios.
+description: |
+  WHAT: Modify existing Figma designs in-place using the Figma MCP — text edits, color updates, layout restructuring, element add/remove, resizing to new formats.
+  TRIGGERS: "change [something] in this Figma", "modify / tweak / adjust this design", "update the text / colors", "resize this frame to mobile", "adapt this layout", "fix the spacing", "move / swap / replace this element".
+  NOT FOR: creating a new Figma file from scratch. Resizing a KV into all ad sizes natively → use figma-resize. Animating a Figma design → use figma-to-animation (in animations-and-motion-skills/).
 ---
 
 # Figma Modify
