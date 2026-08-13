@@ -1,6 +1,10 @@
 ---
 name: resize-with-nano-banana
-description: Resize a master banner/ad design (a Key Visual) into multiple ad sizes using the Nano Banana prompt system and Google Gemini image generation. This is an INTERACTIVE, runnable skill — it asks the user for all needed inputs and assets, analyzes the master design using your own vision, then generates each resized creative. Triggers when the user wants to "resize with nano banana", generate AI-resized ad variants, create banner sizes with AI, or adapt a KV to multiple ad/social formats.
+description: |
+  WHAT: AI-resize a master banner/ad (Key Visual) into multiple ad and social sizes via Google Gemini image generation (Nano Banana prompt system). Interactive — asks for all inputs and the master image, analyzes it with vision, then generates each resized creative (recomposing, not cropping).
+  TRIGGERS: "resize with nano banana", "generate AI-resized ad variants", "create banner sizes with AI", "adapt this KV to social sizes with Gemini", any KV→multiple-ad-sizes request that requires AI image generation.
+  REQUIRES: Google Gemini API key (GEMINI_API_KEY or GOOGLE_API_KEY), a master design image file, Python 3.
+  NOT FOR: native Figma resizing (no AI, keeps Figma elements as vectors) → use figma-resize. Resizing an existing web animation → use resize-animation (in animations-and-motion-skills/).
 ---
 
 # Resize with Nano Banana
