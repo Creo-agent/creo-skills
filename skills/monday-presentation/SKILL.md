@@ -1,6 +1,9 @@
 ---
 name: monday-presentation-v2
-description: Creates branded monday.com HTML presentations using a design-system-first approach with responsive layouts, keyboard navigation, and professional monday branding. Use when the user asks to create a presentation, build slides, make a deck, or generate a slide deck with monday.com branding. Supports content from markdown files, rough outlines, or just a topic. Outputs a single self-contained HTML file.
+description: |
+  WHAT: Generate branded monday.com HTML slide decks — responsive 16:9 slides with keyboard navigation, dark/light themes, charts, and official monday design tokens. Outputs a single self-contained HTML file with zero external dependencies.
+  TRIGGERS: "create a presentation", "build slides", "make a deck", "generate a slide deck", "create monday-branded slides", "make a presentation about [topic]". Accepts content from markdown files, rough outlines, CSV data, or just a topic.
+  NOT FOR: PowerPoint / Keynote / Google Slides files. Generic non-monday-branded decks. Animation work → use figma-to-animation (in animations-and-motion-skills/).
 ---
 
 # monday-presentation-v2
