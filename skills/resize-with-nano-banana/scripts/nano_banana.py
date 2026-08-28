@@ -115,8 +115,7 @@ def extract_text(resp):
         for part in cand.get("content", {}).get("parts", []):
             if "text" in part:
                 out.append(part["text"])
-    return "
-".join(out).strip()
+    return "\n".join(out).strip()
 
 
 def cmd_analyze(args):
