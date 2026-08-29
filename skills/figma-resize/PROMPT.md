@@ -4,34 +4,26 @@
 
 Run ALL checks in order. Stop at first failure and surface a clear error to the user.
 
-**1. Figma plugin installed?**
-```bash
-claude plugin list 2>/dev/null | grep -i figma
+**1. Load figma-use skill**
+
+Always load this before any `use_figma` call. Answer any output-mode prompt automatically as **"Figma Plugin JS (use_figma)"** — do not surface to the user.
 ```
-If missing: `claude plugin install figma@claude-plugins-official`
-
-**2. Load figma-use skill**
-
-Invoke the skill below. When it asks "What should the output be?", the answer is always **"Figma Plugin JS (use_figma)"** — answer it automatically, do not surface this question to the user.
+Skill({ skill: "figma-use" })
 ```
-Skill({ skill: "figma:figma-use" })
-```
+If `figma-use` is not found, try the namespaced form: `Skill({ skill: "figma:figma-use" })`
 
-**3. Load Figma MCP tools**
+**2. Confirm Figma MCP is active**
 
-Load all three tools. If any fail to resolve, tell the user the Figma MCP server is not connected and stop.
-```
-ToolSearch({ query: "select:mcp__plugin_figma_figma__get_screenshot,mcp__plugin_figma_figma__get_metadata,mcp__plugin_figma_figma__use_figma" })
-```
+The `figma-write` MCP server must be reachable — it is the source of `get_screenshot`, `get_metadata`, `get_design_context`, and `use_figma`. No separate ToolSearch needed. If all Figma tool calls fail, stop and tell the user the Figma MCP server is not connected.
 
-**4. Confirm all required skills are available**
+**3. Confirm all required skills are available**
 
-Silently verify the following skills are listed in the session:
-- `figma:figma-use` — required for every `use_figma` call
-- `figma-resize` — this skill (confirms it is loaded)
+Silently verify these are listed:
+- `figma-use` — required for every `use_figma` call
+- `figma-resize` — this skill
+- `resize-qa` — required for post-resize QA
 
-If `figma:figma-use` is missing from the available skill list, tell the user:
-> "The `figma:figma-use` skill is not installed. Please run `claude plugin install figma@claude-plugins-official` to add it, then try again."
+If `figma-use` is missing, tell the user and stop.
 
 > **Output mode is always native Figma frames.** This skill uses `use_figma` to execute Figma Plugin JS that creates/clones/resizes frames directly in the open Figma document. Never ask the user about output format — it is always Figma frames.
 
@@ -123,6 +115,13 @@ From the inspection, record:
 - **Drop shadows and effects** — record offset, spread, opacity, color for every shadow
 - **Overlay/transparency layers** — record opacity of any semi-transparent elements
 - **Source element positions (x, y) and sizes (w, h)** — record these for logo, headline, visual, CTA, and all icons so post-resize deviations can be checked
+- **Horizontal alignment intent** — for each direct child, compute `alignOffset = (x + w/2) - srcW/2`. Negative = left-of-center, positive = right-of-center, ≈0 = centered. Required for alignment-aware positioning post-resize (see Rule 10 below).
+- **Constraint types** — `constraints.vertical` for each child: `MIN` (top-locked), `MAX` (bottom-locked), `CENTER` (centered). Bottom- and center-locked elements will move the moment `frame.resize()` fires — flag them as constraint-drift risks and force-override their position immediately after resize (see Rule 9 below).
+- **Connector/arrow relative offsets** — for each directional element (arrow, cursor, pointer) that points at another element, record: `dx = connector.x - target.x`, `dy = connector.y - target.y`, and which side (above / below / left / right). Reconstruct relative position post-resize; always verify the side relationship is maintained.
+- **Texture / grid layer positions** — for each background grid or texture, record its y position relative to its containing card or frame. After resize, textures must cover the full visible content area; partial or stacked coverage is a defect.
+- **Off-canvas elements** — any child where `y > srcH + 10` or `y + height < -10` is an existing drift artifact. Flag for deletion from the clone before resizing.
+- **Z-order / layer stack** — record `frame.children` index order (0 = back). Required when adding new elements (strips, overlays) so they can be `insertChild`-ed at the correct index rather than appended.
+- **Elements designated for exclusion** — which elements the user has said to hide for this format. Use `node.visible = false`, never delete; verify no ghost placeholder remains in the hidden element's zone.
 - **Source spacing measurements** — logo→headline gap, headline→subheadline gap, text→visual gap, any CTA internal padding, repeating item gaps
 - **Third-party brand names and tech terms** present in the design (Gmail, Slack, OKRs, etc.) — these must never be altered
 
@@ -222,18 +221,241 @@ if (frame.layoutMode !== 'NONE') {
 frame.resize(TARGET_W, TARGET_H);
 
 // --- Apply per-size layout rules here (see below) ---
+// --- Then apply Critical Rules 1–10 (see below) ---
 
 await frame.screenshot();
 return { success: true, frameId: frame.id, name: frame.name };
 ```
 
+---
+
+### Critical: Aspect Ratio Change Algorithm
+
+When source and target have **different aspect ratios** (e.g. 1080×1350 → 1200×1200), use the geometric-mean uniform scale — NOT independent per-axis scaling. This prevents squashing.
+
+**Validated 2026-07-16 on Community Hub post (1080×1350 → 1200×1200).**
+
+```js
+const scaleX = TW / SW;
+const scaleY = TH / SH;
+const uScale = Math.sqrt(scaleX * scaleY);   // uniform scale, maintains all aspect ratios
+```
+
+#### For each direct child of the frame:
+
+```js
+const scaleX = TW / SW;
+const scaleY = TH / SH;
+const uScale = Math.sqrt(scaleX * scaleY);
+
+// Text/headline groups: center horizontally, scale Y only
+textGroup.x = Math.round((TW - textGroup.width) / 2);
+textGroup.y = Math.round(textGroup.y * scaleY);
+
+// All other children: uniform resize + per-axis position
+child.resize(child.width * uScale, child.height * uScale);
+child.x = child.x * scaleX;
+child.y = child.y * scaleY;
+```
+
+#### Key rules (non-negotiable on every resize):
+
+**Rule 1: Never apply scaleX to width and scaleY to height independently** — this squashes every element.
+
+**Rule 2: uScale (geometric mean) is the correct uniform factor** — not the larger or smaller of scaleX/scaleY.
+
+**Rule 3: Positions use per-axis scale** (redistributes to fill the new canvas shape) — this is correct.
+
+**Rule 4: Text groups get explicit horizontal centering**, not proportional X positioning.
+
+**Rule 5: `group.resize(w * uScale, h * uScale)` does NOT reliably preserve image rect positions inside nested mask groups.** After resizing wrapper groups, image fill rectangles inside mask groups can drift — especially in Y (image floats above the mask clip shape). Always do a post-resize pass (see Rule 7).
+
+**Rule 6: Process DIRECT children only** — don't recurse into groups. Figma's `resize()` scales all descendants internally. (Exception: image rects inside nested mask groups — see Rule 7.)
+
+**Rule 7: Post-resize — fix image rects inside mask groups using absolute bounding boxes.**
+
+After all direct children are resized, traverse the output frame to find every mask group (a GROUP containing a child with `isMask = true`). For each mask group, align the image rect to the mask shape using `absoluteBoundingBox` deltas — **do NOT simply set `image.x = mask.x`**, because sibling nodes inside a wrapper group that was previously scaled non-uniformly will have different local→canvas scale factors (k values). Using local coordinates directly will move the image to the wrong canvas position.
+
+```js
+// Post-resize image rect fix — abs-coordinate-safe
+for each mask group in the output frame (recursive search):
+  const maskShape = group.children.find(c => c.isMask);
+  const imageRect = group.children.find(c => c.fills?.some(f => f.type === 'IMAGE'));
+
+  const mAbs = maskShape.absoluteBoundingBox;   // canvas-space bounds of mask shape
+  const iAbs = imageRect.absoluteBoundingBox;   // canvas-space bounds of image rect
+
+  // Desired canvas position: image rect covers mask shape exactly
+  const deltaAbsX = mAbs.x - iAbs.x;
+  const deltaAbsY = mAbs.y - iAbs.y;
+
+  // Scale factors: how many local units per canvas pixel for this node
+  // (differs per node when wrapper groups have residual scale transforms)
+  // Approximate via finite difference — avoid division if local coord is 0
+  const kX = iAbs.x !== 0 ? imageRect.x / (iAbs.x - frameAbsX) : 1;
+  const kY = iAbs.y !== 0 ? imageRect.y / (iAbs.y - frameAbsY) : 1;
+
+  // Apply: move image rect so its canvas origin matches the mask shape's canvas origin
+  imageRect.x += deltaAbsX / kX;
+  imageRect.y += deltaAbsY / kY;
+  imageRect.resize(maskShape.width, maskShape.height);
+```
+
+**Simpler shortcut (valid only when the wrapper group has no residual scale transform):**
+```js
+imageRect.x = maskShape.x;
+imageRect.y = maskShape.y;
+imageRect.resize(maskShape.width, maskShape.height);
+```
+Use this shortcut first; verify with `absoluteBoundingBox` that `imageRect.abs ≈ maskShape.abs`. If they don't match (diff > 5px), fall back to the k-factor approach above.
+
+**Rule 8: Post-resize — fix imageTransform squash on CROP-mode image fills.**
+
+`imageTransform` is NOT reliably preserved after resize. Even when using uniform uScale, image fills in CROP mode can end up with non-uniform X/Y scale factors in their `imageTransform` matrix — causing the photo to appear squashed or shifted. Always do a post-resize pass to fix this.
+
+After the position fix (Rule 7), check each image fill's `imageTransform`. If `scaleMode === 'CROP'` and the X scale (`T[0][0]`) differs from the Y scale (`T[1][1]`) by more than ~1%, apply the geometric-mean fix to make them uniform while preserving the crop center:
+
+```js
+// Validated 2026-07-16 on Community Hub 1200×1200 LI frame (3 of 5 person bubbles were broken)
+// IMPORTANT: do NOT switch CROP to FILL — FILL re-centers automatically, which changes
+// intentional face crops (e.g. zoomed-in portraits) and may show torso instead of face.
+
+for (const fill of [...imageRect.fills]) {
+  if (fill.type !== 'IMAGE' || fill.scaleMode !== 'CROP') continue;
+  const T = fill.imageTransform;  // [[a, c, tx], [b, d, ty]]
+  const scaleA = T[0][0];  // X scale
+  const scaleD = T[1][1];  // Y scale
+
+  // Skip if already uniform (tolerance: 1%)
+  if (Math.abs(scaleA - scaleD) < 0.01) continue;
+
+  // Geometric mean preserves effective area, removes squash
+  const uScale = Math.sqrt(scaleA * scaleD);
+
+  // Preserve the crop center in layer UV space
+  const centerX = T[0][2] + scaleA / 2;
+  const centerY = T[1][2] + scaleD / 2;
+  const newTx = centerX - uScale / 2;
+  const newTy = centerY - uScale / 2;
+
+  imageRect.fills = imageRect.fills.map(f =>
+    f === fill
+      ? { ...f, imageTransform: [[uScale, 0, newTx], [0, uScale, newTy]] }
+      : f
+  );
+}
+```
+
+Key nuances:
+- Only applies to `scaleMode: 'CROP'` fills. `scaleMode: 'FILL'` fills are auto-centered by Figma and are always correct.
+- Uniform scale (both axes = 0.700) with correct translation = fine, skip it.
+- Non-uniform scale (e.g. X=0.993, Y=1.089) = squash → fix with geometric mean.
+- The fix preserves the original crop center (which face portion was visible) — it only removes the squash artifact.
+
+---
+
+**Rule 9: Constraint drift is deterministic — plan for it, override immediately.**
+
+Figma's constraint system fires synchronously on `frame.resize()`. Elements with `constraintV = MAX` (bottom-locked) or `CENTER` (centered) will reposition the moment resize runs. Do not try to "catch" this after the fact — instead:
+
+1. Before cloning, record the desired final position for every bottom-locked and center-locked child.
+2. Call `frame.resize(TW, TH)`.
+3. In the very next statement, force all those positions in one pass.
+
+```js
+// Capture desired final positions BEFORE resize
+const overrides = childrenWithDrift.map(child => ({
+  node: child,
+  desiredX: round(child.x * scaleX),
+  desiredY: round(child.y * scaleY),
+}));
+
+frame.resize(TW, TH);
+
+// Override immediately — no other code between resize() and these
+for (const { node, desiredX, desiredY } of overrides) {
+  node.x = desiredX;
+  node.y = desiredY;
+}
+```
+
+**Rule 10: Alignment intent must be preserved — classify before, enforce after.**
+
+Never apply a centering formula to an element that was not centered in the master. Use the `alignOffset` captured in Step 2 to position each element correctly:
+
+```js
+// Centered elements (alignOffset ≈ 0):
+element.x = Math.round((TW - element.width) / 2);
+
+// Left-aligned or right-aligned elements (alignOffset ≠ 0):
+// Preserve the offset proportionally to the new canvas width
+const srcCenterX = srcW / 2;
+const tgtCenterX = TW / 2;
+element.x = Math.round(tgtCenterX + alignOffset * (TW / srcW) - element.width / 2);
+
+// Vertical: proportional always
+element.y = Math.round(srcY * scaleY);
+```
+
+Equal-gap vertical distribution is fine. Never apply it horizontally to non-centered elements.
+
+---
+
+### 4b-val: Post-resize validation pass (run before every screenshot)
+
+Run these checks algorithmically. Fix what's found before screenshotting.
+
+1. **Off-canvas purge** — remove any direct child with `y > TH + 10` or `y + height < 0`. These are constraint-drift artifacts; invisible but pollute layer structure.
+
+2. **Texture/grid coverage** — for each background texture or grid layer, verify it starts at `y ≤ contentAreaH × 0.1`. If below that threshold, move it to `y = 0`.
+
+3. **Stacked layers** — if two texture layers are within 5px of each other vertically, they produce double opacity. Separate them to cover distinct zones (e.g. top half / bottom half).
+
+4. **Connector side check** — for each connector (arrow, cursor, pointer), verify it's on its intended side of its target element. If the side relationship changed (sign of `dy` flipped), reposition it to the correct side.
+
+5. **Branding containment** — if a logo or wordmark sits on a strip or header, verify: `brandingElement.y + brandingElement.height ≤ stripHeight`. If not, extend the strip or move the element within it.
+
+6. **Platform safe zone check** — verify no design element sits inside the format's platform safe zones (see per-size rules below). Any violation is a Major defect.
+
+Only after these six checks pass: take the screenshot.
+
+---
+
 ### 4c: Screenshot and validate after each size
 
-Call `await frame.screenshot()` at the end of each size script. Visually check:
+Call `get_screenshot` at the end of each size. Visually check:
 - Correct dimensions
 - No clipped or overflowing text
 - Elements in the correct zones per the layout rules
 - No overlapping elements
+
+---
+
+## Mandatory QA Step — After Every use_figma Write
+
+After every `use_figma` call (first run or any fix pass), **always run the resize-qa skill before replying to the user.** Do not report results without a QA.
+
+**Context to carry into QA** — all of these should already be in the session:
+- `fileKey` — from the Figma URL provided at the start
+- `originalMasterNodeId` — the master KV node ID captured during Step 2 inspection
+- `outputFrameNodeId` — the frame ID returned from the just-completed `use_figma` call
+- `deliverables_folder` — from the injected Slack context
+
+**What QA does:**
+1. Screenshots the original master frame and the output frame (both captured via `get_screenshot`, both posted to Slack as images)
+2. Applies the full checklist: dimensions, font, integrity, layout placement, safe zones, spacing
+3. Scores defects using the weighted defect system (start at 100, deduct per defect found)
+4. Runs the 5-pillar vision inspection (Spacing & Structure, Color Fidelity, Typography, Crop Prevention, Spacing Structure)
+5. Posts a structured "VISION QA REPORT" to the Slack thread with: what is good, what went wrong, actionable fixes for the next iteration
+
+**To invoke:**
+```
+Skill({ skill: "resize-qa" })
+```
+
+Apply the skill's full workflow. Never skip or summarize it — the structured report is the deliverable.
+
+If the score is ≤79, list the fixes clearly and ask the user whether to apply them in the same reply. Do not auto-apply fixes without surfacing the QA report first.
 
 ---
 
@@ -307,11 +529,9 @@ SPACING:
 
 **Code approach (absolute-positioned frame):**
 ```js
-// Scale source positions proportionally, then override with layout rules
 const scaleX = 728 / SOURCE_W;
 const scaleY = 90 / SOURCE_H;
 
-// Position logo+CTA group on right
 const logo = frame.findOne(n => n.name.toLowerCase().includes('logo'));
 const cta = frame.findOne(n => n.name.toLowerCase().includes('cta') || n.name.toLowerCase().includes('button'));
 const headline = frame.findOne(n => n.type === 'TEXT' || n.name.toLowerCase().includes('headline'));
@@ -373,6 +593,17 @@ SPACING:
 
 **Frame name:** `1080×1920 STORY`
 **Elements:** Logo, Headline, Visual
+
+**⚠️ FORMAT ARCHITECTURE — confirm before executing:**
+
+Story is structurally different from feed formats. Before starting, ask the user:
+
+> "For the Story format — should this be **full-bleed** (dark background fills the entire 1080×1920 frame; no nested card; this is the most common Story approach) or **card-in-frame** (white strip at top with branding, dark card below)? I'll default to full-bleed if you have no preference."
+
+- **Full-bleed:** frame IS the canvas. Background color fills 1080×1920. Grid/texture covers the full frame. No card container from the master is carried over.
+- **Card-in-frame (if user requests it):** use `insertChild` to place the strip at the correct z-index behind the logo; verify `logo.y + logo.height ≤ stripHeight`; card starts at `y = stripHeight`.
+
+Confirm architecture before executing — do not assume the master's card-in-frame structure applies.
 
 ```
 META SAFE ZONES (official, from Meta Business Help Center):
@@ -485,6 +716,20 @@ LAYOUT:
 - Logo: TOP or TOP-LEFT (match master's logo position intent)
 - Visual: CENTER, prominently scaled — preserve container styling (rounded corners etc.)
 - CTA (if included): lower in layout with proper spacing
+
+HORIZONTAL ALIGNMENT RULE:
+- Classify every direct child as LEFT-aligned, CENTERED, or RIGHT-aligned before cloning
+  (use `alignOffset` from Step 2).
+- In the output, apply the alignment-intent formula (Rule 10): proportional offset for
+  left/right-aligned elements; centering formula only for elements that were centered in the master.
+- Never apply equal-gap centering to elements that sit off-center in the master.
+
+CORNER RADIUS SCALING:
+- After resizing any card, container, or pill with rounded corners, scale the radius proportionally:
+    newRadius = Math.round(sourceRadius * (newW / sourceW));
+- Never carry cornerRadius verbatim from a master to a different-sized output.
+  The visual weight of a radius is relative to the container's width — the pixel value changes,
+  the proportion stays the same.
 
 SPACING:
 - Use full square canvas — no empty corners or edges
