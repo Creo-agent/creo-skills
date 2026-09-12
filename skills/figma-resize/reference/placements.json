@@ -1,0 +1,218 @@
+{
+  "version": "2026-09-01",
+  "verifiedAgainstPlatformDocs": "2026-08-31",
+  "readme": "The only source for canvas sizes and safe zones. RESIZE-WORKFLOW.md Step 0 reads this file every run — never work from memory or from SKILL.md's summary table. safeZonePct is the SOURCE OF TRUTH; safeZone pixels are derived from it by ceiling, so a canvas change recomputes correctly. safeZoneSource is one of 'platform' (the platform publishes it), 'derived-house' (derived from a documented platform behaviour), 'internal-tested' (the team's own tested/observed figure, which can supersede a platform's published guidance — see PLACEMENTS.md), 'house' (Creo convention, no platform requirement), or 'n-a' (no safe zone applies, e.g. a crop-only placement). Every placement also carries an operationType: 'resize' (clone the whole composition and transform it — RESIZE-WORKFLOW.md) or 'crop' (extract a fragment of one element and discard the rest — REDDIT-COMMENT-WORKFLOW.md). The two are different engines; never run a crop placement through the resize workflow or vice versa. ctaRule replaces the earlier ctaDefault boolean (R38, Ad-Specific QA Checklist): 'follows-master' means include a CTA iff the master's baseline has one; 'never' is a hard platform exception (Story's native CTA, or a crop placement that never has a CTA at all) that overrides whatever the master has.",
+  "placements": {
+    "STORY": {
+      "label": "Story / Reel",
+      "width": 1080,
+      "height": 1920,
+      "aspectRatio": "9:16",
+      "frameName": "1080×1920 STORY",
+      "safeZonePct": {
+        "top": 0.10416666666666667,
+        "bottom": 0.28125,
+        "left": 0.06,
+        "right": 0.06
+      },
+      "safeZone": {
+        "top": 200,
+        "bottom": 540,
+        "left": 65,
+        "right": 65
+      },
+      "safeZoneSource": "internal-tested",
+      "safeZoneReference": "https://docs.google.com/document/d/10ouC9Uqu2oUV4TELhp28Hmgg1rCI0Jdl-oKjhHwWlx4/edit",
+      "safeZoneNote": "SUPERSEDED 2026-09-01 by the team's own tested Story safe zone (Rachel's Ad-Specific QA Checklist), which differs from Meta's published guidance on BOTH axes: top 200px (10.4%) vs Meta's 269px (14%); bottom 540px (28.1%) vs Meta's 672px (35%). This is not a further refinement of the 2026-08-31 correction — it is a change of SOURCE, from the platform's own published (conservative) recommendation to the team's actual tested/observed real-device coverage. Team decision: use the tested figure as the operating default. Sides (65px / 6%) are UNCHANGED and carried over from Meta's guidance, because the doc does not address side margins for Story at all — this is a deliberate carry-forward, not an oversight. History: pre-2026-08-31 the skill used top 269/bottom 403 (bottom wrong — see GOTCHAS.md); 2026-08-31 corrected bottom to Meta's 672 (top already matched Meta at 269); 2026-09-01 switched both axes to the internal-tested 200/540 per team decision.",
+      "usableArea": {
+        "x": [
+          65,
+          1015
+        ],
+        "y": [
+          200,
+          1380
+        ],
+        "width": 950,
+        "height": 1180
+      },
+      "defaultElements": [
+        "Logo",
+        "Headline",
+        "Visual"
+      ],
+      "ctaRule": "never",
+      "minGaps": {
+        "logoToHeadline": 40,
+        "headlineToSubheadline": 30,
+        "textToVisual": 30,
+        "anyToCta": 30
+      },
+      "visualMinShareOfUsableHeight": 0.5,
+      "layoutOrder": [
+        "Logo",
+        "Headline",
+        "Visual",
+        "CTA"
+      ],
+      "uniqueRules": [
+        "The safe zone here is sourced from the team's own tested figures (Rachel's Ad-Specific QA Checklist), not Meta's published guidance — see safeZoneNote. It is still not negotiable: the reason is real device coverage, just measured internally rather than read off a spec page.",
+        "The largest aspect-ratio change this skill performs. With the corrected usable area (950×1180, ratio 0.805 — portrait, not square), even a 1:1 master leaves real dead space (~230px) — this is no longer a marginal case. See ASK-DONT-GUESS.md's recomputed fit table."
+      ],
+      "operationType": "resize"
+    },
+    "FB": {
+      "label": "Facebook Feed",
+      "width": 1080,
+      "height": 1350,
+      "aspectRatio": "4:5",
+      "frameName": "1080×1350 FB",
+      "operationType": "resize",
+      "safeZonePct": {
+        "top": 0.1,
+        "bottom": 0.1,
+        "left": 0.06,
+        "right": 0.06
+      },
+      "safeZone": {
+        "top": 135,
+        "bottom": 135,
+        "left": 65,
+        "right": 65
+      },
+      "safeZoneSource": "derived-house",
+      "safeZoneReference": "https://www.facebook.com/business/ads-guide/image/facebook-feed",
+      "safeZoneNote": "Meta publishes NO safe zone for Feed placements — verified 2026-08-31 against Meta's own ads guide. Feed creatives render in full inside the post container, with headline and CTA below the image rather than over it. The 10% top/bottom here is DERIVED, not invented: a 4:5 creative delivered to a carousel placement is cropped to 1:1, which removes 135px (10%) from top and bottom. Keeping key content inside that band means the creative survives a centre crop. Sides are 6% for consistency with STORY. Treat third-party 'spec sheets' asserting Story-style safe zones for Feed as conflating placements.",
+      "usableArea": {
+        "x": [
+          65,
+          1015
+        ],
+        "y": [
+          135,
+          1215
+        ],
+        "width": 950,
+        "height": 1080
+      },
+      "defaultElements": [
+        "Logo",
+        "Headline",
+        "Visual"
+      ],
+      "ctaRule": "follows-master",
+      "minGaps": {
+        "logoToHeadline": 35,
+        "headlineToSubheadline": 25,
+        "textToVisual": 30,
+        "anyToCta": 30
+      },
+      "visualMinShareOfUsableHeight": 0.4,
+      "layoutOrder": [
+        "Logo",
+        "Headline",
+        "Visual",
+        "CTA"
+      ],
+      "uniqueRules": [
+        "No platform UI overlays a Feed image. The margin exists to survive a 1:1 centre crop if the creative is reused in a carousel placement, not to dodge an overlay.",
+        "Meta's recommended resolution for 4:5 Feed is 1440×1800; 1080×1350 is the same ratio and above the 600×750 minimum, kept deliberately (decision 2026-08-31)."
+      ]
+    },
+    "LI": {
+      "label": "LinkedIn Feed",
+      "width": 1200,
+      "height": 1200,
+      "aspectRatio": "1:1",
+      "frameName": "1200×1200 LI",
+      "operationType": "resize",
+      "safeZonePct": {
+        "top": 0.06,
+        "bottom": 0.06,
+        "left": 0.06,
+        "right": 0.06
+      },
+      "safeZone": {
+        "top": 72,
+        "bottom": 72,
+        "left": 72,
+        "right": 72
+      },
+      "safeZoneSource": "house",
+      "safeZoneReference": "https://business.linkedin.com/marketing-solutions/success/ads-guide/single-image-ads",
+      "safeZoneNote": "LinkedIn publishes NO safe zone for single image ads — verified 2026-08-31 against LinkedIn's own ads guide, which specifies dimensions and file limits only. Headline and CTA render below the image in the feed card, so nothing overlays the creative and there is no crop risk within LinkedIn. 6% is a Creo house standard for visual consistency with the other placements, NOT a platform requirement. 1200×1200 is LinkedIn's own recommended square size.",
+      "usableArea": {
+        "x": [
+          72,
+          1128
+        ],
+        "y": [
+          72,
+          1128
+        ],
+        "width": 1056,
+        "height": 1056
+      },
+      "defaultElements": [
+        "Logo",
+        "Headline",
+        "Visual"
+      ],
+      "ctaRule": "follows-master",
+      "minGaps": {
+        "logoToHeadline": 40,
+        "headlineToSubheadline": 30,
+        "textToVisual": 30,
+        "anyToCta": 30
+      },
+      "visualMinShareOfUsableHeight": 0.4,
+      "layoutOrder": [
+        "Logo",
+        "Headline",
+        "Visual",
+        "CTA"
+      ],
+      "uniqueRules": [
+        "No empty corners or edges — the square canvas should read as a balanced, filled composition rather than a portrait letterboxed into a square.",
+        "Text can carry more weight here than in Feed placements; LinkedIn creatives are viewed at a larger relative size in-feed."
+      ]
+    },
+    "REDDIT_COMMENT": {
+      "label": "Reddit Comment-Style",
+      "operationType": "crop",
+      "width": 1440,
+      "height": 1080,
+      "aspectRatio": "4:3",
+      "frameName": "1440×1080 REDDIT-COMMENT",
+      "safeZonePct": null,
+      "safeZone": null,
+      "safeZoneSource": "n-a",
+      "safeZoneReference": null,
+      "safeZoneNote": "No safe zone applies. This is not a composed frame with a logo/headline/CTA layout — it is a single cropped visual fragment displayed next to platform-rendered comment text. There is no platform UI to avoid inside the image itself.",
+      "usableArea": null,
+      "defaultElements": [
+        "VisualCrop"
+      ],
+      "forbiddenElements": [
+        "Logo",
+        "Headline",
+        "Subheadline",
+        "CTA"
+      ],
+      "ctaRule": "never",
+      "cropSource": "The master's ORIGINAL full-size visual node — never a previously-generated placement's output, and never the whole visual scaled down to fit. Crop a genuine sub-region.",
+      "focalPointRule": "The subject's focal point stays visible and centred in the new crop — not just 'not cut off'.",
+      "minGaps": null,
+      "visualMinShareOfUsableHeight": null,
+      "layoutOrder": null,
+      "uniqueRules": [
+        "What belongs here: an eye-catching crop pulled from the source ad's original full-size visual — not text, not the CTA, not the logo, and not the full visual as-is (usually too small to read meaningfully at this size and shape).",
+        "Status: in production per the source spec (Ad-Specific QA Checklist), but this is the skill's first crop-type placement — verify the workflow against a real master before treating it as equally mature to the resize placements. See REDDIT-COMMENT-WORKFLOW.md."
+      ],
+      "onHoldSiblings": {
+        "REDDIT_FEED": "1:1, 1200×1200 (same canvas as LI) — on hold, not implemented",
+        "GOOGLE_DV360": "TBD, 5 sizes — on hold, not implemented"
+      }
+    }
+  }
+}
