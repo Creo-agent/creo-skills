@@ -1,0 +1,12 @@
+gsap
+====
+
+Vendored snapshot.
+
+Upstream source: github.com/heygen-com/hyperframes
+Upstream path:   skills/gsap/SKILL.md
+
+This skill's content was copied verbatim from the upstream repository above and
+vendored into the mdai-animation hub as a pinned snapshot. It is retained here for
+attribution. The hub is now the source of truth; changes are made here rather than
+via the upstream skill-manager.
