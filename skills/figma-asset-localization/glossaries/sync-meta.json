@@ -1,0 +1,11 @@
+{
+  "last_sync": "2026-09-14T06:05:23+0300",
+  "method": "sheets_api_v4",
+  "results": {
+    "de-DE": "ok",
+    "pt-BR": "ok",
+    "fr-FR": "ok",
+    "es-MX": "ok",
+    "ja-JP": "ok"
+  }
+}
