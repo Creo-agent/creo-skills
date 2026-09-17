@@ -221,6 +221,38 @@ Always commit the README change with the message: `Update skill registry: <skill
 | **Last updated by** | Elior Siegelwachs |
 | **Last updated** | 2026-07-12 |
 
+### `figma-asset-localization`
+
+| Field | Value |
+|---|---|
+| **Folder** | [`skills/figma-asset-localization/`](./figma-asset-localization/) |
+| **Purpose** | End-to-end Figma asset localization pipeline — translates, layout-corrects, and QAs Figma banner assets for target locales (de-DE, pt-BR, fr-FR, es-MX, ja-JP). Ships with per-locale glossaries and fix-method references. |
+| **Triggers** | Board subitems where System Status = Idle or Review Status = Re-run Requested. Do not use for email/landing-page/ad-copy localization. |
+| **Keywords** | `localization`, `localize`, `translate`, `de-DE`, `pt-BR`, `fr-FR`, `es-MX`, `ja-JP`, `glossary`, `layout fix` |
+| **Dependencies** | Runs inside its origin hub (n8n board triggers + `domains/localization/…` knowledge/required-files). **Cataloged as reference/external — not wired to run inside Creo.** |
+| **Key files** | `SKILL.md` · `glossaries/` (5 locales, md+csv) · `references/fix-methods/` |
+| **Entry point** | Load `SKILL.md` |
+| **Owner** | Localization team (origin hub) |
+| **Status** | Reference / external — documented here, not Creo-runnable |
+| **Last updated** | 2026-09-17 |
+
+---
+
+### `campaign-variant-generator`
+
+| Field | Value |
+|---|---|
+| **Folder** | [`skills/campaign-variant-generator/`](./campaign-variant-generator/) |
+| **Purpose** | Reference for the Campaign Variant Generator Figma plugin (Figma plugin → n8n → Claude → 7 variant sets → in-plugin pixel-fit → CM picks/applies). Documents the architecture, not an executable pipeline. |
+| **Triggers** | Questions about how variant generation works, the plugin→n8n→Claude flow, or debugging variant generation. |
+| **Keywords** | `variant`, `campaign variant`, `headline`, `CTA`, `n8n`, `HMAC`, `pixel-fit`, `Figma plugin` |
+| **Dependencies** | Runs via the Figma plugin — **not directly executable.** Cataloged as reference. |
+| **Key files** | `SKILL.md` |
+| **Entry point** | Load `SKILL.md` |
+| **Owner** | michael@monday.com (Michael Eizenstat) |
+| **Status** | Reference — plugin-hosted, not Creo-runnable |
+| **Last updated** | 2026-09-17 |
+
 ---
 
 > To add a new skill: create a subfolder with `SKILL.md` + `PROMPT.md` + `README.md`, add a row to this index with your name as Owner, and commit with message `Update skill registry: <skill-name> — added by <name>`.
